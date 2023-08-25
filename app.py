@@ -1,7 +1,7 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, url_for, redirect
 from flask_migrate import Migrate
-from database import Database
-from data_cliente import DataCliente
+from data.database import Database
+from logic.cliente_logic import ClienteLogic
 
 
 app = Flask(__name__)
@@ -29,5 +29,11 @@ migrate.init_app(app, Database.db)
 @app.route('/index')
 @app.route('/index.html')
 def get_all_clientes():
-    clientes = DataCliente.get_all_clientes()
+    clientes = ClienteLogic.get_all_clientes()
     return render_template('index.html', clientesParam = clientes)
+
+
+@app.route('/eliminar/<int:id>')
+def eliminar(id):
+    ClienteLogic.delete_cliente(id)
+    return redirect(url_for('get_all_clientes'))

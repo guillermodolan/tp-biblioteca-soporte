@@ -1,4 +1,4 @@
-from database import Database
+from data.database import Database
 
 db = Database.db
 
