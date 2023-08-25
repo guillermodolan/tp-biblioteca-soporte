@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Alta de cliente</title>
+</head>
+<body>
+<h1>Alta de cliente</h1>
+<form method="POST">
+  {{cliente_agregar.csrf_token}}
+  <!-- Accedo a cada uno de los valores del formulario -->
+  <p>
+    <!-- Con esto muestro la etiqueta asociada al campo 'Nombre' -->
+    {{cliente_agregar.nombre.label}} <br/>
+    <!-- Indico el ancho del inputText asociado a este valor (size = 30) -->
+    {{cliente_agregar.nombre(size=70)}}
+  </p>
+  <p>
+    {{cliente_agregar.apellido.label}} <br/>
+    {{cliente_agregar.apellido(size=70)}}
+  </p>
+  <p>
+    {{cliente_agregar.email.label}} <br/>
+    {{cliente_agregar.email(size=30)}}
+  </p>
+  <p>
+    {{cliente_agregar.nombre_usuario.label}} <br/>
+    {{cliente_agregar.nombre_usuario(size=70)}}
+  </p>
+  <p>
+    {{cliente_agregar.contraseña.label}} <br/>
+    {{cliente_agregar.contraseña(size=70)}}
+  </p>
+  <p>
+    {{cliente_agregar.telefono.label}} <br/>
+    {{cliente_agregar.telefono(size=70)}}
+  </p>
+  <p>
+    {{cliente_agregar.usuario_telegram.label}} <br/>
+    {{cliente_agregar.usuario_telegram(size=70)}}
+  </p>
+  <p>
+    {{cliente_agregar.guardar()}}
+    <a href="{{url_for('get_all_clientes')}}">Cancelar</a>
+  </p>
+</form>
+</body>
+</html>

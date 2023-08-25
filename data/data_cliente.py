@@ -27,3 +27,8 @@ class DataCliente():
 
         #Guardo los cambios en la base de datos
         Database.db.session.commit()
+
+    @classmethod
+    def add_cliente(cls, cliente):
+        Database.db.session.add(cliente)
+        Database.db.session.commit()

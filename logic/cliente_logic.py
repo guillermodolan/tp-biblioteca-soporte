@@ -14,3 +14,7 @@ class ClienteLogic():
     @classmethod
     def delete_cliente(cls, id):
         cliente = DataCliente.delete_cliente(id)
+
+    @classmethod
+    def add_cliente(cls, cliente):
+        DataCliente.add_cliente(cliente)
