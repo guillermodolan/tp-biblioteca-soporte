@@ -18,3 +18,18 @@ class ClienteLogic():
     @classmethod
     def add_cliente(cls, cliente):
         DataCliente.add_cliente(cliente)
+
+
+    #En desarrollo
+    @classmethod
+    def get_cliente_by_user(cls, username, password):
+        cliente = DataCliente.get_cliente_by_user(username, password)
+        if cliente:
+            return cliente
+        else:
+            #Aca va una excepción!
+            print("Aca va una excepción")
+
+    @classmethod
+    def update_cliente(cls, cliente):
+        cliente = DataCliente.update_cliente(cliente)

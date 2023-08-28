@@ -7,17 +7,15 @@
 <body>
 <h1>Login</h1>
 <form method="POST">
-    <div>
-        <label for="nombre_usuario">Nombre de usuario</label>
-        <input type="text" name="nombre_usuario">
-    </div>
-    <div>
-        <label for="contraseña">Contraseña</label>
-        <input type="password" name="contraseña">
-    </div>
-    <div>
-        <input type="submit" value="Ingresar"></input>
-    </div>
+    {{login.csrf_token}}
+    <p>
+    {{login.nombre_usuario.label}} <br/>
+    {{login.nombre_usuario(size=70)}}
+    </p>
+    <p>
+    {{login.contrasenia.label}} <br/>
+    {{login.contrasenia(size=70)}}
+    </p>
 </form>
 </body>
 </html>

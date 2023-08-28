@@ -1,8 +1,9 @@
-from flask import Flask, render_template, url_for, redirect, request
+from flask import Flask, render_template, url_for, redirect, request, session
 from flask_migrate import Migrate
 from data.database import Database
 from entity_models.cliente_form import ClienteForm
 from entity_models.cliente_model import Cliente
+from entity_models.login_form import LoginForm
 from logic.cliente_logic import ClienteLogic
 
 
@@ -27,14 +28,28 @@ migrate.init_app(app, Database.db)
 #######################CONFIGURACIÓN FLASK MIGRATE################################################
 
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
+@app.route('/', methods=['GET', 'POST'])
+def inicio():
     return render_template('login.html')
 
-@app.route('/get_all_clientes.html')
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    login_form = LoginForm()
+    if request.method == 'POST':
+        if login_form.validate_on_submit():
+            cliente = ClienteLogic.get_cliente_by_user(login_form.nombre_usuario, login_form.contrasenia)
+            app.logger.debug(f'Nombre de usuario: {cliente.nombre_usuario}')
+            app.logger.debug(f'Contraseña: {cliente.contraseña}')
+        # ACA SE VA A LANZAR LA EXCEPCIÓN EN CASO DE QUE FALLE
+            #return render_template('listado_clientes.')
+    return "nada"
+
+
+
+@app.route('/get_all_clientes')
 def get_all_clientes():
     clientes = ClienteLogic.get_all_clientes()
-    return render_template('get_all_clientes.html', clientesParam = clientes)
+    return render_template('listado_clientes.html', clientesParam = clientes)
 
 @app.route('/eliminar/<int:id>')
 def delete_cliente(id):
@@ -51,3 +66,15 @@ def add_cliente():
             ClienteLogic.add_cliente(cliente)
         return redirect(url_for('get_all_clientes'))
     return render_template('alta_cliente.html', cliente_agregar = cliente_form)
+
+@app.route('/editar_cliente/<int:id>', methods=['GET', 'POST'])
+def update_cliente(id):
+    cliente = ClienteLogic.get_one_cliente(id)
+    cliente_form = ClienteForm(obj = cliente)
+
+    if request.method == 'POST':
+        if cliente_form.validate_on_submit():
+            cliente_form.populate_obj(cliente)
+            ClienteLogic.update_cliente(cliente)
+            return redirect(url_for('get_all_clientes'))
+    return render_template('editar_cliente.html', cliente_editar = cliente_form)
