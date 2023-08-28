@@ -1,10 +1,10 @@
 from entity_models.cliente_model import Cliente
 from data.database import Database
 
-#get_all_clientes
+#get_all
 #get_one
-#update_cliente
-#delete_cliente
+#add
+#delete
 
 
 class DataCliente():
@@ -15,8 +15,13 @@ class DataCliente():
 
     @classmethod
     def get_one_cliente(cls, id):
-        cliente =Cliente.query.get_or_404(id)
+        cliente = Cliente.query.get_or_404(id)
         return cliente
+
+    @classmethod
+    def add_cliente(cls, cliente):
+        Database.db.session.add(cliente)
+        Database.db.session.commit()
 
     @classmethod
     def delete_cliente(cls, id):
@@ -26,9 +31,4 @@ class DataCliente():
         Database.db.session.delete(cliente)
 
         #Guardo los cambios en la base de datos
-        Database.db.session.commit()
-
-    @classmethod
-    def add_cliente(cls, cliente):
-        Database.db.session.add(cliente)
         Database.db.session.commit()
