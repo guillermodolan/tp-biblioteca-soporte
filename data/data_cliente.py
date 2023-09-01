@@ -2,6 +2,7 @@ from flask import Flask
 
 from entity_models.cliente_model import Cliente
 from data.database import Database
+
 app = Flask(__name__)
 
 #get_all_clientes
@@ -20,7 +21,6 @@ class DataCliente():
     def get_one_cliente(cls, id):
         cliente = Cliente.query.get_or_404(id)
         return cliente
-
     @classmethod
     def delete_cliente(cls, id):
         cliente = DataCliente.get_one_cliente(id)
@@ -37,10 +37,8 @@ class DataCliente():
         Database.db.session.commit()
 
     @classmethod
-    def get_cliente_by_user(cls, username, password):
-        cliente = Cliente.query.filter_by(nombre_usuario = username, contrasenia = password).first()
-        app.logger.debug(f'Nombre de usuario: {cliente.nombre_usuario}')
-        app.logger.debug(f'Contraseña: {cliente.contrasenia}')
+    def get_cliente_by_user(cls, username):
+        cliente = Cliente.query.filter_by(nombre_usuario = username).first()
         return cliente
 
     @classmethod
