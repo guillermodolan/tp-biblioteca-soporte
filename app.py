@@ -30,14 +30,10 @@ migrate = Migrate()
 migrate.init_app(app, Database.db)
 #######################CONFIGURACIÓN FLASK MIGRATE################################################
 
-
+@app.route('/')
 @app.route('/inicio')
 def inicio():
-    id_cliente = session.get('id_cliente')
-    if id_cliente:
-        cliente = ClienteLogic.get_one_cliente(id_cliente)
-        return f'Bienvenido {cliente.nombre}'
-    return 'No has iniciado sesión'
+    return redirect(url_for('login'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -47,15 +43,15 @@ def login():
 
         cliente = ClienteLogic.valida_credenciales(nombre_usuario, contraseña)
         if cliente:
-            #El print() lo agregué para ver si exhibia el atributo id_cliente de la entity
-            print(f'Id de cliente: {cliente.id_cliente}')
-            session['id_cliente'] = cliente.id_cliente
-            app.logger.debug(f'Id de cliente: {cliente.id_cliente}')
-            return redirect(url_for('inicio'))
+            return render_template('home.html', clienteLogueado = cliente)
+        else:
+            return render_template('login.html')
+    else:
+        return render_template('login.html')
 
-    return render_template('login.html')
-
-
+@app.route('/home')
+def home():
+    return render_template('home.html')
 
 @app.route('/get_all_clientes')
 def get_all_clientes():
@@ -76,9 +72,11 @@ def delete_cliente(id):
 @app.route('/agregar_cliente', methods=['GET', 'POST'])
 def add_cliente():
     cliente = Cliente()
-    cliente_form = ClienteForm(obj = cliente)
+    cliente_form = ClienteForm(obj=cliente)
     if request.method == 'POST':
+        contraseña = request.form['contraseña']
         if cliente_form.validate_on_submit():
+            cliente.establece_contraseña(contraseña)
             cliente_form.populate_obj(cliente)
             ClienteLogic.add_cliente(cliente)
         return redirect(url_for('get_all_clientes'))

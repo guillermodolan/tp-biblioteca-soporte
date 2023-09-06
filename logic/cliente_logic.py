@@ -28,18 +28,20 @@ class ClienteLogic():
         DataCliente.add_cliente(cliente)
 
 
-    #En desarrollo
     @classmethod
     def get_cliente_by_user(cls, username):
         cliente = DataCliente.get_cliente_by_user(username)
         return cliente
 
     @classmethod
-    def valida_credenciales(cls, username, password):
+    def valida_credenciales(cls, username, contraseña):
         cliente = ClienteLogic.get_cliente_by_user(username)
-        if cliente and Cliente.valida_contraseña(cliente, password):
-            print(f'Id de cliente: {cliente.id_cliente}')
-            return cliente
+        if cliente:
+            clienteValidado = Cliente.valida_contraseña(cliente, contraseña)
+            if clienteValidado is not None:
+                return cliente
+            else:
+                return None
         return None
 
     @classmethod
