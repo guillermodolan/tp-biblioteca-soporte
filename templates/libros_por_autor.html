@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Libros de Open Library</title>
+</head>
+<body>
+    <h1>Libros de Open Library</h1>
+    <ul>
+        {% for libro in librosPorAutor %}
+            <li>
+                <strong>Título:</strong> {{ libro.titulo }}<br>
+                <strong>Autor(es):</strong> {{ libro.autores|join(', ') }}<br>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

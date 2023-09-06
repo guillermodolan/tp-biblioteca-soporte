@@ -76,7 +76,7 @@ def add_cliente():
     if request.method == 'POST':
         contraseña = request.form['contraseña']
         if cliente_form.validate_on_submit():
-            cliente.establece_contraseña(contraseña)
+            Cliente.establece_contraseña(cliente, contraseña)
             cliente_form.populate_obj(cliente)
             ClienteLogic.add_cliente(cliente)
         return redirect(url_for('get_all_clientes'))
@@ -97,9 +97,11 @@ def update_cliente(id):
         raise e
 
 
-@app.route('/libros/autor', methods=['GET'])
+@app.route('/libros/<autor>', methods=['GET'])
 def get_libros_by_author(autor):
-    libros_obtenidos = LibroAPILogic.get_libros_by_author(autor)
-    libros = libros_obtenidos.get('docs', []) # Obtener la lista de libros (si está disponible)
-    print(type(libros))
-    return render_template('libros_por_autor.html', librosPorAutor = libros)
+    libros = LibroAPILogic.get_libros_by_author(autor)
+
+    if libros is not None:
+        return render_template("libros_por_autor.html", librosPorAutor = libros)
+    else:
+        return "No se encontraron los libros"
