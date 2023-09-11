@@ -3,12 +3,12 @@ from flask_migrate import Migrate
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import ObjectDeletedError, StaleDataError
 from werkzeug.exceptions import NotFound
-
 from data.database import Database
 from entity_models.cliente_form import ClienteForm
 from entity_models.cliente_model import Cliente
 from logic.cliente_logic import ClienteLogic
 from logic.libro_API_logic import LibroAPILogic
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = Database.configura_conexion()
@@ -43,6 +43,9 @@ def login():
 
         cliente = ClienteLogic.valida_credenciales(nombre_usuario, contraseña)
         if cliente:
+            #Guardo al cliente en la sesión, para que se mueva por la página web sin necesidad
+            #de loguearse a cada momento.
+            session['cliente'] = cliente.to_dict()
             return render_template('home.html', clienteLogueado = cliente)
         else:
             return render_template('login.html')
@@ -51,7 +54,14 @@ def login():
 
 @app.route('/home')
 def home():
-    return render_template('home.html')
+    #Al cliente que guardé en la sesión en el método login(), lo accedo desde este método, el cual
+    #es para la página principal
+    cliente_data = session.get('cliente')
+    if cliente_data:
+        cliente = Cliente.from_dict(cliente_data)
+        return render_template('home.html', clienteLogueado = cliente)
+    else:
+        return redirect(url_for('login'))
 
 @app.route('/get_all_clientes')
 def get_all_clientes():
@@ -100,7 +110,6 @@ def update_cliente(id):
 @app.route('/libros/<autor>', methods=['GET'])
 def get_libros_by_author(autor):
     libros = LibroAPILogic.get_libros_by_author(autor)
-
     if libros is not None:
         return render_template("libros_por_autor.html", librosPorAutor = libros)
     else:

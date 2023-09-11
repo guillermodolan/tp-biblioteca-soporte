@@ -12,7 +12,8 @@ class LibroAPILogic:
                 for libro in data["docs"]:
                     titulo = libro.get("title", "Título no disponible")
                     autores = libro.get("author_name", ["Autor no disponible"])
-                    libros.append({"titulo": titulo, "autores": autores})
+                    isbn = libro.get("isbn", ["ISBN no disponible"])
+                    libros.append({"titulo": titulo, "autores": autores, "isbn": isbn})
                 return libros
             else:
                 return None

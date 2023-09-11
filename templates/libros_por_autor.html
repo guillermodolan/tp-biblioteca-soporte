@@ -10,6 +10,7 @@
             <li>
                 <strong>Título:</strong> {{ libro.titulo }}<br>
                 <strong>Autor(es):</strong> {{ libro.autores|join(', ') }}<br>
+                <strong>Código ISBN:</strong> {{ libro.isbn }}<br>
             </li>
         {% endfor %}
     </ul>
