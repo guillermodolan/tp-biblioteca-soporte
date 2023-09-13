@@ -1,4 +1,5 @@
 from flask import Flask, render_template, url_for, redirect, request, session
+from flask_mail import Message, Mail
 from flask_migrate import Migrate
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import ObjectDeletedError, StaleDataError
@@ -14,6 +15,14 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = Database.configura_conexion()
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'konigari'
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'konigari2023'
+app.config['MAIL_PASSWORD'] = 'nrez dpvc rino mqjw'
+app.config['MAIL_DEFAULT_SENDER'] = 'konigari2023@gmail.com'
+
+mail = Mail(app)
 
 
 Database.db.init_app(app)
@@ -43,6 +52,9 @@ def login():
 
         cliente = ClienteLogic.valida_credenciales(nombre_usuario, contraseña)
         if cliente:
+            #Guardo al cliente en la sesión, para que se mueva por la página web sin necesidad
+            #de loguearse a cada momento.
+            session['cliente'] = cliente.to_dict()
             return render_template('home.html', clienteLogueado = cliente)
         else:
             return render_template('login.html')
@@ -51,7 +63,30 @@ def login():
 
 @app.route('/home')
 def home():
-    return render_template('home.html')
+    #Al cliente que guardé en la sesión en el método login(), lo accedo desde este método, el cual
+    #es para la página principal
+    cliente_data = session.get('cliente')
+    if cliente_data:
+        cliente = Cliente.from_dict(cliente_data)
+        return render_template('home.html', clienteLogueado = cliente)
+    else:
+        return redirect(url_for('login'))
+
+
+@app.route('/enviar_correo')
+def enviar_correo():
+    destinatario = ''
+    asunto = 'Prueba de mensaje'
+    mensaje = 'Esto es un mensaje'
+
+    msg = Message(asunto, recipients=[destinatario])
+    msg.body = mensaje
+
+    try:
+        mail.send(msg)
+        return 'Correo electrónico enviado con éxito'
+    except Exception as e:
+        return f'Error al enviar el correo electrónico: {str(e)}'
 
 @app.route('/get_all_clientes')
 def get_all_clientes():
@@ -100,7 +135,6 @@ def update_cliente(id):
 @app.route('/libros/<autor>', methods=['GET'])
 def get_libros_by_author(autor):
     libros = LibroAPILogic.get_libros_by_author(autor)
-
     if libros is not None:
         return render_template("libros_por_autor.html", librosPorAutor = libros)
     else:
