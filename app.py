@@ -27,17 +27,8 @@ mail = Mail(app)
 
 Database.db.init_app(app)
 
-
-#######################CONFIGURACIÓN FLASK MIGRATE################################################
-#Agreo la configuración de Flask Migrate para que podamos realizar las migraciones, y
-#se pueda crear el mapeo de la clase Persona (desarrollada más abajo) hacia la
-#tabla de base de datos que se debe de crear
-
-#1- Creo un objeto Migrate
 migrate = Migrate()
-#2- Inicializo el objeto migrate. Le paso los valores de app, y db
 migrate.init_app(app, Database.db)
-#######################CONFIGURACIÓN FLASK MIGRATE################################################
 
 @app.route('/')
 @app.route('/inicio')
@@ -46,7 +37,13 @@ def inicio():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':
+
+    cliente_data = session.get('cliente')
+    if cliente_data:
+        #cliente = Cliente.from_dict(cliente_data)
+        return redirect(url_for('home'))
+
+    elif request.method == 'POST':
         nombre_usuario = request.form['nombre_usuario']
         contraseña = request.form['contraseña']
 
@@ -73,11 +70,20 @@ def home():
         return redirect(url_for('login'))
 
 
+#Ruta para manejar el cierre de sesión
+@app.route('/logout')
+def logout():
+    #Elimino los datos de la sesión del cliente
+    session.pop('cliente', None)
+    return redirect(url_for('login'))
+
+
+
 @app.route('/enviar_correo')
 def enviar_correo():
-    destinatario = ''
+    destinatario = 'eneasparatore@gmail.com'
     asunto = 'Prueba de mensaje'
-    mensaje = 'Esto es un mensaje'
+    mensaje = 'Hi! Mr Eneas. I want you!'
 
     msg = Message(asunto, recipients=[destinatario])
     msg.body = mensaje
@@ -87,6 +93,7 @@ def enviar_correo():
         return 'Correo electrónico enviado con éxito'
     except Exception as e:
         return f'Error al enviar el correo electrónico: {str(e)}'
+
 
 @app.route('/get_all_clientes')
 def get_all_clientes():
@@ -132,6 +139,10 @@ def update_cliente(id):
         raise e
 
 
+
+
+
+#Método que obtiene libros de una API, mediante un autor, que lo recibe como parámetro
 @app.route('/libros/<autor>', methods=['GET'])
 def get_libros_by_author(autor):
     libros = LibroAPILogic.get_libros_by_author(autor)
@@ -139,3 +150,22 @@ def get_libros_by_author(autor):
         return render_template("libros_por_autor.html", librosPorAutor = libros)
     else:
         return "No se encontraron los libros"
+
+
+
+
+
+#Esta ruta es la que lleva a la página para que un cliente pueda alquilar un libro
+@app.route('/alquiler_libros')
+def alquiler_libros():
+    return render_template('alquiler_libros.html')
+
+
+#MÉTODO INCOMPLETO. ESTARÁ TERMINADO CUANDO SE HAYA IMPLEMENTADO LA BÚSQUEDA POR GÉNERO.
+#Método que se ejecuta cuando se busca un libro, ya sea por autor o por género,
+#en el buscador ubicado en el archivo 'alquiler_libros.html'
+@app.route('/busca_libros', methods=['POST'])
+def busca_libros():
+    if request.method == 'POST':
+        busca = request.form['buscador']
+        return redirect(url_for('get_libros_by_author', autor = busca))
