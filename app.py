@@ -13,7 +13,7 @@ from logic.libro_API_logic import LibroAPILogic
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = Database.configura_conexion()
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.config['SECRET_KEY'] = 'konigari'
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
@@ -25,6 +25,12 @@ app.config['MAIL_DEFAULT_SENDER'] = 'konigari2023@gmail.com'
 # Configuración para implementar el carrito de pedidos
 # Cada elemento será un diccionario con información del libro
 app.config['CARRITO'] = []
+
+
+
+
+
+
 
 mail = Mail(app)
 
@@ -44,7 +50,6 @@ def login():
 
     cliente_data = session.get('cliente')
     if cliente_data:
-        #cliente = Cliente.from_dict(cliente_data)
         return redirect(url_for('home'))
 
     elif request.method == 'POST':

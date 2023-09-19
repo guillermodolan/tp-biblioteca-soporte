@@ -1,5 +1,4 @@
 from data.database import Database
-
 db = Database.db
 
 #Defino una clase de modelo. Esta clase para que se considere una clase de modelo,
