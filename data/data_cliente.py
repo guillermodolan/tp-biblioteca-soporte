@@ -60,18 +60,6 @@ class DataCliente():
             raise e
 
     @classmethod
-    def add_cliente(cls, cliente):
-        try:
-            Database.db.session.add(cliente)
-            Database.db.session.commit()
-        except sqlalchemy.exc.SQLAlchemyError as e:
-            app.logger.debug(f'Error en la base de datos: {e}')
-            raise e
-        except Exception as e:
-            app.logger.debug(f'Error inesperado: {e}')
-            raise e
-
-    @classmethod
     def get_cliente_by_user(cls, username):
         try:
             cliente = Cliente.query.filter_by(nombre_usuario = username).first()
