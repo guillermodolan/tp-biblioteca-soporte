@@ -17,8 +17,12 @@ class LibroAPILogic:
                     for libro in data["docs"]:
                         titulo = libro.get("title", "Título no disponible")
                         autores = libro.get("author_name", ["Autor no disponible"])
-                        isbn = libro.get("isbn", ["ISBN no disponible"])
-                        libros.append({"titulo": titulo, "autores": autores, "isbn": isbn})
+                        isbn_list = libro.get("isbn", ["ISBN no disponible"])
+
+                        # Filtrar los ISBN que comienzan con '978'
+                        isbns_con_prefijo_978 = [isbn for isbn in isbn_list if isbn.startswith('978')]
+
+                        libros.append({"titulo": titulo, "autores": autores, "isbn": isbns_con_prefijo_978})
                     return libros
             else:
                 return None

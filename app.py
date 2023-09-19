@@ -22,6 +22,10 @@ app.config['MAIL_USERNAME'] = 'konigari2023'
 app.config['MAIL_PASSWORD'] = 'nrez dpvc rino mqjw'
 app.config['MAIL_DEFAULT_SENDER'] = 'konigari2023@gmail.com'
 
+# Configuración para implementar el carrito de pedidos
+# Cada elemento será un diccionario con información del libro
+app.config['CARRITO'] = []
+
 mail = Mail(app)
 
 
@@ -94,7 +98,6 @@ def enviar_correo():
     except Exception as e:
         return f'Error al enviar el correo electrónico: {str(e)}'
 
-
 @app.route('/get_all_clientes')
 def get_all_clientes():
     clientes = ClienteLogic.get_all_clientes()
@@ -138,10 +141,6 @@ def update_cliente(id):
     except NotFound as e:
         raise e
 
-
-
-
-
 #Método que obtiene libros de una API, mediante un autor, que lo recibe como parámetro
 @app.route('/libros/<autor>', methods=['GET'])
 def get_libros_by_author(autor):
@@ -169,3 +168,11 @@ def busca_libros():
     if request.method == 'POST':
         busca = request.form['buscador']
         return redirect(url_for('get_libros_by_author', autor = busca))
+
+
+
+# Ruta para mostrar el carrito de pedidos de un cliente
+@app.route('/carrito')
+def mostrar_carrito():
+    carrito = app.config['CARRITO']
+    return render_template('carrito_de_pedidos.html', carrito_de_pedidos = carrito)
