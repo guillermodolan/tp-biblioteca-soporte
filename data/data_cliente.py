@@ -32,3 +32,8 @@ class DataCliente():
 
         #Guardo los cambios en la base de datos
         Database.db.session.commit()
+
+    @classmethod
+    def get_cliente_by_user(cls, username):
+        cliente = Cliente.query.filter_by(nombre_usuario=username).first()
+        return cliente
