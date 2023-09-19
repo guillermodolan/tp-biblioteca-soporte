@@ -1,23 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Login</title>
+    <title>Iniciar Sesión</title>
 </head>
 <body>
-<h1>Login</h1>
-<form method="POST">
-    <div>
-        <label for="nombre_usuario">Nombre de usuario</label>
-        <input type="text" name="nombre_usuario">
-    </div>
-    <div>
+    <h1>Iniciar Sesión</h1>
+    <form method="POST">
+        <label for="nombre_usuario">Nombre de Usuario</label>
+        <input type="text" name="nombre_usuario" required><br>
         <label for="contraseña">Contraseña</label>
-        <input type="password" name="contraseña">
-    </div>
-    <div>
-        <input type="submit" value="Ingresar"></input>
-    </div>
-</form>
+        <input type="password" name="contraseña" required><br>
+        <input type="submit" value="Iniciar Sesión">
+    </form>
 </body>
 </html>
