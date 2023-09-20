@@ -9,7 +9,7 @@ from entity_models.cliente_form import ClienteForm
 from entity_models.cliente_model import Cliente
 from logic.cliente_logic import ClienteLogic
 from logic.libro_API_logic import LibroAPILogic
-
+import json
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = Database.configura_conexion()
@@ -26,12 +26,6 @@ app.config['MAIL_DEFAULT_SENDER'] = 'konigari2023@gmail.com'
 # Cada elemento será un diccionario con información del libro
 app.config['CARRITO'] = []
 
-
-
-
-
-
-
 mail = Mail(app)
 
 
@@ -40,6 +34,9 @@ Database.db.init_app(app)
 migrate = Migrate()
 migrate.init_app(app, Database.db)
 
+datos_sesion = {}
+
+
 @app.route('/')
 @app.route('/inicio')
 def inicio():
@@ -47,7 +44,6 @@ def inicio():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-
     cliente_data = session.get('cliente')
     if cliente_data:
         return redirect(url_for('home'))
@@ -152,8 +148,6 @@ def get_libros_by_author(autor):
     libros = LibroAPILogic.get_libros_by_author(autor)
     if libros is not None:
         return render_template("libros_por_autor.html", librosPorAutor = libros)
-    else:
-        return "No se encontraron los libros"
 
 
 
@@ -168,12 +162,28 @@ def alquiler_libros():
 #MÉTODO INCOMPLETO. ESTARÁ TERMINADO CUANDO SE HAYA IMPLEMENTADO LA BÚSQUEDA POR GÉNERO.
 #Método que se ejecuta cuando se busca un libro, ya sea por autor o por género,
 #en el buscador ubicado en el archivo 'alquiler_libros.html'
-@app.route('/busca_libros', methods=['POST'])
+@app.route('/busca_libros', methods=['GET', 'POST'])
 def busca_libros():
     if request.method == 'POST':
         busca = request.form['buscador']
         return redirect(url_for('get_libros_by_author', autor = busca))
+    else:
+        return render_template('alquiler_libros.html')
 
+@app.route('/agregar_al_carrito', methods=['POST'])
+def agregar_al_carrito():
+    libro = request.form['libro']
+    json_str = libro
+    # Convertir la cadena de caracteres a un diccionario usando json.loads()
+    libro_info = json.loads(json_str.replace("'", "\""))  # Reemplaza comillas simples por comillas dobles y luego convierte a JSON
+
+    # Acceder a los atributos
+    titulo = libro_info['titulo']
+    autores = libro_info['autores']
+
+    # Agrego el libro al carrito de pedidos
+    app.config['CARRITO'].append({'titulo':titulo, 'autores':autores})
+    return redirect(url_for('mostrar_carrito'))
 
 
 # Ruta para mostrar el carrito de pedidos de un cliente
