@@ -8,6 +8,7 @@ from werkzeug.exceptions import NotFound
 from data.database import Database
 from entity_models.cliente_form import ClienteForm
 from entity_models.cliente_model import Cliente
+from entity_models.pedido_model import Pedido
 from logic.cliente_logic import ClienteLogic
 from logic.libro_API_logic import LibroAPILogic
 import json
@@ -117,18 +118,7 @@ def delete_cliente(id):
         raise e
 
 
-@app.route('/agregar_cliente', methods=['GET', 'POST'])
-def add_cliente():
-    cliente = Cliente()
-    cliente_form = ClienteForm(obj=cliente)
-    if request.method == 'POST':
-        contraseña = request.form['contraseña']
-        if cliente_form.validate_on_submit():
-            Cliente.establece_contraseña(cliente, contraseña)
-            cliente_form.populate_obj(cliente)
-            ClienteLogic.add_cliente(cliente)
-        return redirect(url_for('get_all_clientes'))
-    return render_template('alta_cliente.html', cliente_agregar=cliente_form)
+
 
 
 @app.route('/editar_cliente/<int:id>', methods=['GET', 'POST'])
@@ -153,8 +143,13 @@ def get_libros_by_author(autor):
     if libros is not None:
         return render_template("libros_por_autor.html", librosPorAutor = libros)
 
-
-
+@app.route('/libros/genre/<genero>', methods=['GET'])
+def get_libros_by_genre(genero):
+    libros = LibroAPILogic.get_libros_by_genre(genero)
+    if libros is not None:
+        return render_template("libros_por_genero.html", librosPorGenero=libros)
+    else:
+        return "No se encontraron libros para este género"
 
 
 #Esta ruta es la que lleva a la página para que un cliente pueda alquilar un libro
@@ -170,7 +165,11 @@ def alquiler_libros():
 def busca_libros():
     if request.method == 'POST':
         busca = request.form['buscador']
-        return redirect(url_for('get_libros_by_author', autor = busca))
+        opcion = request.form['opcion']
+        if opcion == 'autor':
+            return redirect(url_for('get_libros_by_author', autor=busca))
+        elif opcion == 'genero':
+            return redirect(url_for('get_libros_by_genre', genero=busca))
     else:
         return render_template('alquiler_libros.html')
 
@@ -184,9 +183,10 @@ def agregar_al_carrito():
     # Acceder a los atributos
     titulo = libro_info['titulo']
     autores = libro_info['autores']
+    isbn = libro_info['isbn']
 
     # Agrego el libro al carrito de pedidos
-    app.config['CARRITO'].append({'titulo':titulo, 'autores':autores})
+    app.config['CARRITO'].append({'titulo':titulo, 'autores':autores, 'isbn':isbn})
     return redirect(url_for('mostrar_carrito'))
 
 
@@ -196,11 +196,30 @@ def mostrar_carrito():
     carrito = app.config['CARRITO']
     return render_template('carrito_de_pedidos.html', carrito_de_pedidos = carrito)
 
+# @app.route('/confirmar_pedido', methods=['POST'])
+# def confirmar_pedido():
+#     if request.method == 'POST':
+#         carrito = app.config['CARRITO']
+#         for elem in carrito:
+#             pedido = Pedido()
+#             pedido.libro = elem
+#
+#
+#         for car in carrito:
+#             app.logger.debug(car)
+#         return ''
+#     else:
+#         return ''
 
-@app.route('/libros/genre/<genero>', methods=['GET'])
-def get_libros_by_genre(genero):
-    libros = LibroAPILogic.get_libros_by_genre(genero)
-    if libros is not None:
-        return render_template("libros_por_genero.html", librosPorGenero=libros)
-    else:
-        return "No se encontraron libros para este género"
+@app.route('/agregar_cliente', methods=['GET', 'POST'])
+def add_cliente():
+    cliente = Cliente()
+    cliente_form = ClienteForm(obj=cliente)
+    if request.method == 'POST':
+        contraseña = request.form['contraseña']
+        if cliente_form.validate_on_submit():
+            Cliente.establece_contraseña(cliente, contraseña)
+            cliente_form.populate_obj(cliente)
+            ClienteLogic.add_cliente(cliente)
+        return redirect(url_for('get_all_clientes'))
+    return render_template('alta_cliente.html', cliente_agregar=cliente_form)

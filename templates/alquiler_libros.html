@@ -7,6 +7,10 @@
 <body>
 <h1>Página para alquilar libros</h1>
 <form action="/busca_libros" method="post">
+    <div>
+        <input type="radio" name="opcion" value="autor"> Buscar por autor
+        <input type="radio" name="opcion" value="genero"> Buscar por género
+    </div>
     <p>
         <input type="text" name="buscador" placeholder="Ingrese autor o género">
     </p>
