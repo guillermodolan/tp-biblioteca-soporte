@@ -15,7 +15,6 @@ class Cliente(db.Model):
     telefono = db.Column(db.String(25))
     usuario_telegram = db.Column(db.String(50))
 
-
     #Método usado para serializar el objeto Cliente, para poder guardarlo en la sesión.
     def to_dict(self):
         return {
