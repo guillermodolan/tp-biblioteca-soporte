@@ -34,6 +34,7 @@ class DataCliente():
         except Exception as e:
             app.logger.debug(f'Error inesperado: {e}')
             raise e
+
     @classmethod
     def add_cliente(cls, cliente):
         try:
@@ -62,7 +63,7 @@ class DataCliente():
     @classmethod
     def get_cliente_by_user(cls, username):
         try:
-            cliente = Cliente.query.filter_by(nombre_usuario = username).first()
+            cliente = Cliente.query.filter_by(nombre_usuario=username).first()
             return cliente
         except sqlalchemy.exc.SQLAlchemyError as e:
             app.logger.debug(f"Error de base de datos: {e}")

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Historial Libros</title>
+</head>
+<body>
+    <h1>Libros a devolver</h1>
+    <div>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Email</th>
+                <th>Nombre de usuario</th>
+                <th>Teléfono</th>
+                <th>Usuario telegram</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cli in aDevolverParam %}
+                <tr>
+                    <td>{{cli.id_cliente}}</td>
+                    <td>{{cli.nombre}}</td>
+                    <td>{{cli.apellido}}</td>
+                    <td>{{cli.email}}</td>
+                    <td>{{cli.nombre_usuario}}</td>
+                    <td>{{cli.telefono}}</td>
+                    <td>{{cli.usuario_telegram}}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+    <h1>Libros devueltos</h1>
+</body>
+</html>

@@ -19,6 +19,15 @@ class DataPedido():
         return pedido
 
     @classmethod
+    def get_pedidos_by_cliente(cls, cliente):
+        pedidos_total = DataPedido.get_all_pedidos()
+        pedidos = []
+        for pedido in pedidos_total:
+            if pedido.id_cliente == cliente.id_cliente:
+                pedidos.append(pedido)
+        return pedidos
+
+    @classmethod
     def add_pedido(cls, pedido):
         Database.db.session.add(pedido)
         Database.db.session.commit()
