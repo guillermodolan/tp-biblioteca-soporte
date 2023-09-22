@@ -1,10 +1,11 @@
 from entity_models.autor_model import Autor
 from data.database import Database
 
-#get_all
-#get_one
-#add
-#delete
+
+# get_all
+# get_one
+# add
+# delete
 
 
 class DataAutor():
@@ -27,8 +28,8 @@ class DataAutor():
     def delete_autor(cls, id):
         autor = DataAutor.get_one_autor(id)
 
-        #Elimino al autor
+        # Elimino al autor
         Database.db.session.delete(autor)
 
-        #Guardo los cambios en la base de datos
+        # Guardo los cambios en la base de datos
         Database.db.session.commit()

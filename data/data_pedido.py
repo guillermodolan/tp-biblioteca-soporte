@@ -1,10 +1,11 @@
 from entity_models.pedido_model import Pedido
 from data.database import Database
 
-#get_all
-#get_one
-#add
-#delete
+
+# get_all
+# get_one
+# add
+# delete
 
 
 class DataPedido():
@@ -36,8 +37,8 @@ class DataPedido():
     def delete_pedido(cls, id):
         pedido = DataPedido.get_one_pedido(id)
 
-        #Elimino al pedido
+        # Elimino al pedido
         Database.db.session.delete(pedido)
 
-        #Guardo los cambios en la base de datos
+        # Guardo los cambios en la base de datos
         Database.db.session.commit()

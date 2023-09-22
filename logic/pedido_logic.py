@@ -1,7 +1,7 @@
 from data.data_pedido import DataPedido
 
 
-class PedidoLogic():
+class PedidoLogic:
     @classmethod
     def get_all_pedidos(cls):
         pedidos = DataPedido.get_all_pedidos()

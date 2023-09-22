@@ -1,6 +1,7 @@
 from data.data_libro import DataLibro
 
-class LibroLogic():
+
+class LibroLogic:
     @classmethod
     def get_all_libros(cls):
         libros = DataLibro.get_all_libros()

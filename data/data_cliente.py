@@ -10,7 +10,7 @@ from flask import Flask
 app = Flask(__name__)
 
 
-class DataCliente():
+class DataCliente:
     @classmethod
     def get_all_clientes(cls):
         try:

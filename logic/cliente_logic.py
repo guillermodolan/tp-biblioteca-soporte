@@ -9,11 +9,12 @@ from flask import Flask
 
 app = Flask(__name__)
 
-#Variable creada para lanzar un mensaje al usuario de cómo resultó la operación que intenta
-#realizar
+# Variable creada para lanzar un mensaje al usuario de cómo resultó la operación que intenta
+# realizar
 mensaje = ''
 
-class ClienteLogic():
+
+class ClienteLogic:
     @classmethod
     def get_all_clientes(cls):
         try:
@@ -44,14 +45,13 @@ class ClienteLogic():
         try:
             DataCliente.add_cliente(cliente)
             mensaje = f'Cliente {cliente.nombre} {cliente.apellido} insertado exitosamente'
-            #return mensaje
+            # return mensaje
         except sqlalchemy.exc.SQLAlchemyError as e:
             app.logger.debug(f'Error en la base de datos: {e}')
             raise e
         except Exception as e:
             app.logger.debug(f'Error inesperado: {e}')
             raise e
-
 
     @classmethod
     def get_cliente_by_user(cls, username):
@@ -88,8 +88,8 @@ class ClienteLogic():
         global mensaje
         try:
             DataCliente.delete_cliente(id)
-            #mensaje = f'Cliente {cliente.nombre} {cliente.apellido} eliminado exitosamente'
-            #return mensaje
+            # mensaje = f'Cliente {cliente.nombre} {cliente.apellido} eliminado exitosamente'
+            # return mensaje
         except IntegrityError as e:
             raise e
         except ObjectDeletedError as e:

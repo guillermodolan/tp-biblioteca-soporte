@@ -5,6 +5,7 @@ from flask import Flask
 
 app = Flask(__name__)
 
+
 class LibroAPILogic:
     @classmethod
     def get_libros_by_author(cls, autor):

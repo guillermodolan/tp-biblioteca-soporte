@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 
+
 class Database:
     # Inicialización del objeto db de sqlalchemy. Esto es la conexión hacia la base de datos
     # utilizando SQLAlchemy.

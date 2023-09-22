@@ -1,6 +1,7 @@
 from data.data_categoria import DataCategoria
 
-class CategoriaLogic():
+
+class CategoriaLogic:
     @classmethod
     def get_all_categorias(cls):
         categorias = DataCategoria.get_all_categorias()

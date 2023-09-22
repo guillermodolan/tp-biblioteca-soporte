@@ -1,10 +1,11 @@
 from entity_models.libro_model import Libro
 from data.database import Database
 
-#get_all
-#get_one
-#add
-#delete
+
+# get_all
+# get_one
+# add
+# delete
 
 
 class DataLibro():
@@ -27,8 +28,8 @@ class DataLibro():
     def delete_libro(cls, id):
         libro = DataLibro.get_one_libro(id)
 
-        #Elimino al libro
+        # Elimino al libro
         Database.db.session.delete(libro)
 
-        #Guardo los cambios en la base de datos
+        # Guardo los cambios en la base de datos
         Database.db.session.commit()

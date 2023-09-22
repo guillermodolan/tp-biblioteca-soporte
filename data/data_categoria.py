@@ -1,10 +1,11 @@
 from entity_models.categoria_model import Categoria
 from data.database import Database
 
-#get_all
-#get_one
-#add
-#delete
+
+# get_all
+# get_one
+# add
+# delete
 
 
 class DataCategoria():
@@ -27,8 +28,8 @@ class DataCategoria():
     def delete_categoria(cls, id):
         categoria = DataCategoria.get_one_categoria(id)
 
-        #Elimino a la categoría
+        # Elimino a la categoría
         Database.db.session.delete(categoria)
 
-        #Guardo los cambios en la base de datos
+        # Guardo los cambios en la base de datos
         Database.db.session.commit()

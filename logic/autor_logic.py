@@ -1,6 +1,7 @@
 from data.data_autor import DataAutor
 
-class AutorLogic():
+
+class AutorLogic:
     @classmethod
     def get_all_autores(cls):
         autores = DataAutor.get_all_autores()
