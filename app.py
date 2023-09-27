@@ -6,10 +6,21 @@ from sqlalchemy.orm.exc import ObjectDeletedError, StaleDataError
 from werkzeug.exceptions import NotFound
 from data.database import Database
 from entity_models.cliente_form import ClienteForm
+from entity_models.pedido_form import PedidoForm
+from entity_models.categoria_form import CategoriaForm
+from entity_models.libro_form import LibroForm
+from entity_models.autor_form import AutorForm
 from entity_models.cliente_model import Cliente
+from entity_models.pedido_model import Pedido
+from entity_models.categoria_model import Categoria
+from entity_models.libro_model import Libro
+from entity_models.autor_model import Autor
 from logic.cliente_logic import ClienteLogic
 from logic.libro_API_logic import LibroAPILogic
 from logic.pedido_logic import PedidoLogic
+from logic.categoria_logic import CategoriaLogic
+from logic.libro_logic import LibroLogic
+from logic.autor_logic import AutorLogic
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = Database.configura_conexion()
