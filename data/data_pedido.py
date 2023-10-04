@@ -1,13 +1,6 @@
 from entity_models.pedido_model import Pedido
 from data.database import Database
 
-
-# get_all
-# get_one
-# add
-# delete
-
-
 class DataPedido():
     @classmethod
     def get_all_pedidos(cls):

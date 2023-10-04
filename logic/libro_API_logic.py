@@ -21,9 +21,34 @@ class LibroAPILogic:
                         isbn_list = libro.get("isbn", ["ISBN no disponible"])
 
                         # Filtrar los ISBN que comienzan con '978'
-                        isbns_con_prefijo_978 = [isbn for isbn in isbn_list if isbn.startswith('978')]
+                        #isbns_con_prefijo_978 = [isbn for isbn in isbn_list if isbn.startswith('978')]
 
-                        libros.append({"titulo": titulo, "autores": autores, "isbn": isbns_con_prefijo_978})
+                        # Obtener solo el primer código ISBN si hay al menos uno
+                        primer_isbn = isbn_list[0] if isbn_list else "ISBN no disponible"
+
+                        libros.append({"titulo": titulo, "autores": autores, "isbn": primer_isbn})
+                    return libros
+            else:
+                return None
+        except requests.exceptions.RequestException as e:
+            raise e
+        except Exception as e:
+            raise e
+
+    @classmethod
+    def get_libros_by_genre(cls, genero):
+        try:
+            response = DataLibroAPI.get_libros_by_genre(genero)
+            if response.status_code == 200:
+                data = response.json()
+                if "works" in data:
+                    libros = []
+                    for libro in data["works"]:
+                        titulo = libro.get("title", "Título no disponible")
+                        autores = libro.get("authors", [])
+                        autores_nombres = (autor["name"] for autor in autores)
+                        isbn = libro.get("isbn", ["ISBN no disponible"])
+                        libros.append({"titulo": titulo, "autores": autores_nombres, "isbn": isbn})
                     return libros
             else:
                 return None

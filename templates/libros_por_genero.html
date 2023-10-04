@@ -6,14 +6,11 @@
 <body>
     <h1>Libros de Open Library</h1>
     <ul>
-        {% for libro in librosPorAutor %}
+        {% for libro in librosPorGenero %}
             <li>
                 <strong>Título:</strong> {{ libro.titulo }}<br>
                 <strong>Autor(es):</strong> {{ libro.autores|join(', ') }}<br>
-                <form method="POST" action="/agregar_al_carrito">
-                    <input type="hidden" name="libro" value="{{ libro }}">
-                    <button type="submit">Agregar al pedido</button>
-                </form>
+                <strong>Código ISBN:</strong> {{ libro.isbn }}<br>
             </li>
         {% endfor %}
     </ul>

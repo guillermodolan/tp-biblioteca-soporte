@@ -4,6 +4,7 @@ from flask_migrate import Migrate
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import ObjectDeletedError, StaleDataError
 from werkzeug.exceptions import NotFound
+
 from data.database import Database
 from entity_models.cliente_form import ClienteForm
 from entity_models.pedido_form import PedidoForm
@@ -17,6 +18,7 @@ from entity_models.libro_model import Libro
 from entity_models.autor_model import Autor
 from logic.cliente_logic import ClienteLogic
 from logic.libro_API_logic import LibroAPILogic
+import json
 from logic.pedido_logic import PedidoLogic
 from logic.categoria_logic import CategoriaLogic
 from logic.libro_logic import LibroLogic
@@ -203,11 +205,60 @@ def alquiler_libros():
 def busca_libros():
     if request.method == 'POST':
         busca = request.form['buscador']
-        return redirect(url_for('get_libros_by_author', autor=busca))
+        opcion = request.form['opcion']
+        if opcion == 'autor':
+            return redirect(url_for('get_libros_by_author', autor=busca))
+        elif opcion == 'genero':
+            return redirect(url_for('get_libros_by_genre', genero=busca))
+    else:
+        return render_template('alquiler_libros.html')
 
+@app.route('/agregar_al_carrito', methods=['POST'])
+def agregar_al_carrito():
+    libro = request.form['libro']
+    json_str = libro
+    # Convertir la cadena de caracteres a un diccionario usando json.loads()
+    libro_info = json.loads(json_str.replace("'", "\""))  # Reemplaza comillas simples por comillas dobles y luego convierte a JSON
+
+    # Acceder a los atributos
+    titulo = libro_info['titulo']
+    autores = libro_info['autores']
+    isbn = libro_info['isbn']
+
+    # Agrego el libro al carrito de pedidos
+    app.config['CARRITO'].append({'titulo':titulo, 'autores':autores, 'isbn':isbn})
+    return redirect(url_for('mostrar_carrito'))
 
 # Ruta para mostrar el carrito de pedidos de un cliente
 @app.route('/carrito')
 def mostrar_carrito():
     carrito = app.config['CARRITO']
-    return render_template('carrito_de_pedidos.html', carrito_de_pedidos=carrito)
+    return render_template('carrito_de_pedidos.html', carrito_de_pedidos = carrito)
+
+# @app.route('/confirmar_pedido', methods=['POST'])
+# def confirmar_pedido():
+#     if request.method == 'POST':
+#         carrito = app.config['CARRITO']
+#         for elem in carrito:
+#             pedido = Pedido()
+#             pedido.libro = elem
+#
+#
+#         for car in carrito:
+#             app.logger.debug(car)
+#         return ''
+#     else:
+#         return ''
+
+@app.route('/agregar_cliente', methods=['GET', 'POST'])
+def add_cliente():
+    cliente = Cliente()
+    cliente_form = ClienteForm(obj=cliente)
+    if request.method == 'POST':
+        contraseña = request.form['contraseña']
+        if cliente_form.validate_on_submit():
+            Cliente.establece_contraseña(cliente, contraseña)
+            cliente_form.populate_obj(cliente)
+            ClienteLogic.add_cliente(cliente)
+        return redirect(url_for('get_all_clientes'))
+    return render_template('alta_cliente.html', cliente_agregar=cliente_form)
