@@ -146,7 +146,7 @@ def update_cliente(id):
     except NotFound as e:
         raise e
 
-#Método que obtiene libros de una API, mediante un autor, que lo recibe como parámetro
+# Método que obtiene libros de una API, mediante un autor, que lo recibe como parámetro
 @app.route('/libros/<autor>', methods=['GET'])
 def get_libros_by_author(autor):
     libros = LibroAPILogic.get_libros_by_author(autor)
@@ -162,7 +162,7 @@ def get_libros_by_genre(genero):
         return "No se encontraron libros para este género"
 
 
-#Esta ruta es la que lleva a la página para que un cliente pueda alquilar un libro
+# Esta ruta es la que lleva a la página para que un cliente pueda alquilar un libro
 @app.route('/alquiler_libros')
 def alquiler_libros():
     return render_template('alquiler_libros.html')
@@ -185,7 +185,8 @@ def agregar_al_carrito():
     libro = request.form['libro']
     json_str = libro
     # Convertir la cadena de caracteres a un diccionario usando json.loads()
-    libro_info = json.loads(json_str.replace("'", "\""))  # Reemplaza comillas simples por comillas dobles y luego convierte a JSON
+    # Reemplaza comillas simples por comillas dobles y luego convierte a JSON
+    libro_info = json.loads(json_str.replace("'", "\""))
 
     # Acceder a los atributos
     titulo = libro_info['titulo']
@@ -193,7 +194,7 @@ def agregar_al_carrito():
     isbn = libro_info['isbn']
 
     # Agrego el libro al carrito de pedidos
-    app.config['CARRITO'].append({'titulo':titulo, 'autores':autores, 'isbn':isbn})
+    app.config['CARRITO'].append({'titulo': titulo, 'autores': autores, 'isbn': isbn})
     return redirect(url_for('mostrar_carrito'))
 
 
