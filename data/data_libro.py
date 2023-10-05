@@ -33,4 +33,5 @@ class DataLibro():
     @classmethod
     def get_libro_by_titulo(cls, titulo):
         libro = Libro.query.filter(Libro.titulo.ilike(f'%{titulo}%')).first()
+        print('Tipo de dato de libro: ', type(libro))
         return libro

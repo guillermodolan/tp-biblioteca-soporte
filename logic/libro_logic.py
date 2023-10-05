@@ -20,14 +20,20 @@ class LibroLogic():
         DataLibro.delete_libro(id)
 
 
-    # Método que servirá para buscar un libro por ISBN. Esto nos servirá para cuando se confirman
+    # Método que servirá para buscar un libro por título. Esto nos servirá para cuando se confirman
     # libros a un pedido, que no se creen 2 veces en la base de datos.
-    @classmethod
-    def get_libro_by_isbn(cls, isbn):
-        libro = DataLibro.get_libro_by_isbn(isbn)
-        return libro
-
     @classmethod
     def get_libros_by_titulo(cls, titulo):
         libro = DataLibro.get_libro_by_titulo(titulo)
         return libro
+
+
+    # Por regla de negocio 3 en el documento 'Narrativa TPI', validamos que el libro que
+    # se quiere alquilar no esté ya alquilado.
+    @classmethod
+    def valida_existencia_libro(cls, titulo):
+        libro = LibroLogic.get_libros_by_titulo(titulo)
+        if libro.existencia:
+            return libro
+        else:
+            return None

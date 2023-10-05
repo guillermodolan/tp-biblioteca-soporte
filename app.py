@@ -219,17 +219,28 @@ def confirmar_pedido():
                 LibroLogic.add_libro(libro)
         for elem in carrito:
             pedido = Pedido()
-            libro_por_titulo = LibroLogic.get_libros_by_titulo(elem['titulo'])
-            pedido.id_libro = libro_por_titulo.id_libro
-            pedido.estado = True
-            # Obtener la fecha del día en formato datetime
-            fecha_actual = datetime.now()
+            # PARTE DE VALIDACIÓN
+            # Por regla de negocio 3 en el documento 'Narrativa TPI', validamos que el libro que
+            # se quiere alquilar no esté ya alquilado.
+            libro_con_existencia = LibroLogic.valida_existencia_libro(elem['titulo'])
 
-            # Convertir la fecha a una cadena (string) en un formato específico
-            fecha_actual_str = fecha_actual.strftime('%Y-%m-%d')
-            pedido.fecha = fecha_actual_str
-            PedidoLogic.add_pedido(pedido)
-            return ''
+            if libro_con_existencia is not None:
+                pedido.id_libro = libro_con_existencia.id_libro
+                # Cambio la existencia del libro a False dado que se está por alquilar
+                libro_con_existencia.existencia = False
+                pedido.estado = True
+                # Obtener la fecha del día en formato datetime
+                fecha_actual = datetime.now()
+                # Convertir la fecha a una cadena (string) en un formato específico
+                fecha_actual_str = fecha_actual.strftime('%Y-%m-%d')
+                pedido.fecha = fecha_actual_str
+
+                # Agrego el id del cliente al pedido
+                cliente_data = session.get('cliente')
+                cliente_id = cliente_data.get('id_cliente')
+                pedido.id_cliente = cliente_id
+                PedidoLogic.add_pedido(pedido)
+                return ''
     else:
         return ''
 
