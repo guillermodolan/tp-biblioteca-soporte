@@ -9,6 +9,7 @@
         {% for libro in librosPorAutor %}
             <li>
                 <strong>Título:</strong> {{ libro.titulo }}<br>
+                <strong>Categoría:</strong> {{ libro.categoria }}<br>
                 <strong>Autor(es):</strong> {{ libro.autores|join(', ') }}<br>
                 <form method="POST" action="/agregar_al_carrito">
                     <input type="hidden" name="libro" value="{{ libro }}">

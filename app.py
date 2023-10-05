@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import Flask, render_template, url_for, redirect, request, session
 from flask_mail import Message, Mail
 from flask_migrate import Migrate
@@ -7,10 +9,21 @@ from werkzeug.exceptions import NotFound
 
 from data.database import Database
 from entity_models.cliente_form import ClienteForm
+from entity_models.pedido_form import PedidoForm
+from entity_models.categoria_form import CategoriaForm
+from entity_models.libro_form import LibroForm
+from entity_models.autor_form import AutorForm
 from entity_models.cliente_model import Cliente
 from entity_models.pedido_model import Pedido
+from entity_models.categoria_model import Categoria
+from entity_models.libro_model import Libro
+from entity_models.autor_model import Autor
 from logic.cliente_logic import ClienteLogic
 from logic.libro_API_logic import LibroAPILogic
+from logic.pedido_logic import PedidoLogic
+from logic.categoria_logic import CategoriaLogic
+from logic.libro_logic import LibroLogic
+from logic.autor_logic import AutorLogic
 import json
 
 app = Flask(__name__)
@@ -32,6 +45,7 @@ mail = Mail(app)
 Database.db.init_app(app)
 migrate = Migrate()
 migrate.init_app(app, Database.db)
+
 
 @app.route('/')
 @app.route('/inicio')
@@ -73,13 +87,12 @@ def home():
         return redirect(url_for('login'))
 
 
-#Ruta para manejar el cierre de sesión
+# Ruta para manejar el cierre de sesión
 @app.route('/logout')
 def logout():
-    #Elimino los datos de la sesión del cliente
+    # Elimino los datos de la sesión del cliente
     session.pop('cliente', None)
     return redirect(url_for('login'))
-
 
 
 @app.route('/enviar_correo')
@@ -116,9 +129,6 @@ def delete_cliente(id):
         raise e
     except StaleDataError as e:
         raise e
-
-
-
 
 
 @app.route('/editar_cliente/<int:id>', methods=['GET', 'POST'])
@@ -158,9 +168,6 @@ def alquiler_libros():
     return render_template('alquiler_libros.html')
 
 
-#MÉTODO INCOMPLETO. ESTARÁ TERMINADO CUANDO SE HAYA IMPLEMENTADO LA BÚSQUEDA POR GÉNERO.
-#Método que se ejecuta cuando se busca un libro, ya sea por autor o por género,
-#en el buscador ubicado en el archivo 'alquiler_libros.html'
 @app.route('/busca_libros', methods=['GET', 'POST'])
 def busca_libros():
     if request.method == 'POST':
@@ -196,20 +203,35 @@ def mostrar_carrito():
     carrito = app.config['CARRITO']
     return render_template('carrito_de_pedidos.html', carrito_de_pedidos = carrito)
 
-# @app.route('/confirmar_pedido', methods=['POST'])
-# def confirmar_pedido():
-#     if request.method == 'POST':
-#         carrito = app.config['CARRITO']
-#         for elem in carrito:
-#             pedido = Pedido()
-#             pedido.libro = elem
-#
-#
-#         for car in carrito:
-#             app.logger.debug(car)
-#         return ''
-#     else:
-#         return ''
+@app.route('/confirmar_pedido', methods=['POST'])
+def confirmar_pedido():
+    if request.method == 'POST':
+        carrito = app.config['CARRITO']
+        for elem in carrito:
+            # PARTE DE VALIDACIÓN
+            # Verifico que los libros que están en el carrito no estén creados en la base de datos
+            libro_buscado = LibroLogic.get_libros_by_titulo(elem['titulo'])
+            if libro_buscado is None:
+                libro = Libro()
+                libro.titulo = elem['titulo']
+                libro.existencia = True
+                libro.isbn = elem['isbn']
+                LibroLogic.add_libro(libro)
+        for elem in carrito:
+            pedido = Pedido()
+            libro_por_titulo = LibroLogic.get_libros_by_titulo(elem['titulo'])
+            pedido.id_libro = libro_por_titulo.id_libro
+            pedido.estado = True
+            # Obtener la fecha del día en formato datetime
+            fecha_actual = datetime.now()
+
+            # Convertir la fecha a una cadena (string) en un formato específico
+            fecha_actual_str = fecha_actual.strftime('%Y-%m-%d')
+            pedido.fecha = fecha_actual_str
+            PedidoLogic.add_pedido(pedido)
+            return ''
+    else:
+        return ''
 
 @app.route('/agregar_cliente', methods=['GET', 'POST'])
 def add_cliente():
