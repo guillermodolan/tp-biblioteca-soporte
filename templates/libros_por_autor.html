@@ -7,14 +7,17 @@
     <h1>Libros de Open Library</h1>
     <ul>
         {% for libro in librosPorAutor %}
-            <li>
-                <strong>Título:</strong> {{ libro.titulo }}<br>
-                <strong>Autor(es):</strong> {{ libro.autores|join(', ') }}<br>
-                <form method="POST" action="/agregar_al_carrito">
-                    <input type="hidden" name="libro" value="{{ libro }}">
-                    <button type="submit">Agregar al pedido</button>
-                </form>
-            </li>
+            <!-- Verifica si el libro no está en el carrito antes de mostrarlo -->
+            {% if not libro.en_carrito %}
+                <li>
+                    <strong>Título:</strong> {{ libro.titulo }}<br>
+                    <strong>Autor(es):</strong> {{ libro.autores|join(', ') }}<br>
+                    <form method="POST" action="/agregar_al_carrito">
+                        <input type="hidden" name="libro" value="{{ libro }}">
+                        <button type="submit">Agregar al pedido</button>
+                    </form>
+                </li>
+            {% endif %}
         {% endfor %}
     </ul>
     <!-- Con esta condición, cuando se tiene al menos 1 libro en el carrito de pedidos, en el
@@ -25,3 +28,9 @@
     {% endif %}
 </body>
 </html>
+Ahora, los libros que están en el carrito no deberían aparecer en el listado.
+
+
+
+
+

@@ -1,3 +1,4 @@
+import ast
 from datetime import datetime
 
 from flask import Flask, render_template, url_for, redirect, request, session
@@ -164,8 +165,12 @@ def update_cliente(id):
 @app.route('/libros/<autor>', methods=['GET'])
 def get_libros_by_author(autor):
     libros = LibroAPILogic.get_libros_by_author(autor)
+    carrito = app.config['CARRITO']
+    # Agregar una bandera 'en_carrito' a cada libro para indicar si está en el carrito o no
+    for libro in libros:
+        libro['en_carrito'] = any(item['titulo'] == libro['titulo'] for item in carrito)
     if libros is not None:
-        return render_template("libros_por_autor.html", librosPorAutor = libros)
+        return render_template("libros_por_autor.html", librosPorAutor = libros, carrito_de_pedidos=carrito)
 
 
 @app.route('/libros/genre/<genero>', methods=['GET'])
@@ -198,10 +203,11 @@ def busca_libros():
 @app.route('/agregar_al_carrito', methods=['POST'])
 def agregar_al_carrito():
     libro = request.form['libro']
+    print("Libro recibido:", libro)
     json_str = libro
     # Convertir la cadena de caracteres a un diccionario usando json.loads()
     # Reemplaza comillas simples por comillas dobles y luego convierte a JSON
-    libro_info = json.loads(json_str.replace("'", "\""))
+    libro_info = ast.literal_eval(libro)
 
     # Acceder a los atributos
     titulo = libro_info['titulo']
