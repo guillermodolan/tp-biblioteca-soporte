@@ -17,5 +17,11 @@
             </li>
         {% endfor %}
     </ul>
+    <!-- Con esta condición, cuando se tiene al menos 1 libro en el carrito de pedidos, en el
+    listado del autor que el cliente buscó, habrá un botón que al apretarlo redireccionará a la página
+    de alquiler_libros.html -->
+    {% if carrito %}
+        <a href="{{ url_for('alquiler_libros') }}" class="btn btn-primary">Buscar libro</a>
+    {% endif %}
 </body>
 </html>

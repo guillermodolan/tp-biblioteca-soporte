@@ -117,6 +117,20 @@ def get_all_clientes():
     return render_template('listado_clientes.html', clientesParam=clientes)
 
 
+@app.route('/agregar_cliente', methods=['GET', 'POST'])
+def add_cliente():
+    cliente = Cliente()
+    cliente_form = ClienteForm(obj=cliente)
+    if request.method == 'POST':
+        contraseña = request.form['contraseña']
+        if cliente_form.validate_on_submit():
+            Cliente.establece_contraseña(cliente, contraseña)
+            cliente_form.populate_obj(cliente)
+            ClienteLogic.add_cliente(cliente)
+        return redirect(url_for('get_all_clientes'))
+    return render_template('alta_cliente.html', cliente_agregar=cliente_form)
+
+
 @app.route('/eliminar/<int:id>')
 def delete_cliente(id):
     try:
@@ -146,12 +160,13 @@ def update_cliente(id):
     except NotFound as e:
         raise e
 
-# Método que obtiene libros de una API, mediante un autor, que lo recibe como parámetro
+
 @app.route('/libros/<autor>', methods=['GET'])
 def get_libros_by_author(autor):
     libros = LibroAPILogic.get_libros_by_author(autor)
     if libros is not None:
         return render_template("libros_por_autor.html", librosPorAutor = libros)
+
 
 @app.route('/libros/genre/<genero>', methods=['GET'])
 def get_libros_by_genre(genero):
@@ -162,7 +177,6 @@ def get_libros_by_genre(genero):
         return "No se encontraron libros para este género"
 
 
-# Esta ruta es la que lleva a la página para que un cliente pueda alquilar un libro
 @app.route('/alquiler_libros')
 def alquiler_libros():
     return render_template('alquiler_libros.html')
@@ -179,6 +193,7 @@ def busca_libros():
             return redirect(url_for('get_libros_by_genre', genero=busca))
     else:
         return render_template('alquiler_libros.html')
+
 
 @app.route('/agregar_al_carrito', methods=['POST'])
 def agregar_al_carrito():
@@ -198,11 +213,28 @@ def agregar_al_carrito():
     return redirect(url_for('mostrar_carrito'))
 
 
+@app.route('/eliminar_del_carrito/<titulo>')
+def eliminar_libro_carrito(titulo):
+    # Encuentra el índice del libro en el carrito por su título
+    index_to_remove = None
+    for i, libro in enumerate(app.config['CARRITO']):
+        if libro['titulo'] == titulo:
+            index_to_remove = i
+            break
+
+    # Si se encontró el libro, elimínalo del carrito
+    if index_to_remove is not None:
+        app.config['CARRITO'].pop(index_to_remove)
+
+    return redirect(url_for('mostrar_carrito'))
+
+
 # Ruta para mostrar el carrito de pedidos de un cliente
 @app.route('/carrito')
 def mostrar_carrito():
     carrito = app.config['CARRITO']
     return render_template('carrito_de_pedidos.html', carrito_de_pedidos = carrito)
+
 
 @app.route('/confirmar_pedido', methods=['POST'])
 def confirmar_pedido():
@@ -241,19 +273,11 @@ def confirmar_pedido():
                 cliente_id = cliente_data.get('id_cliente')
                 pedido.id_cliente = cliente_id
                 PedidoLogic.add_pedido(pedido)
-                return ''
+        return 'Pedido realizado exitosamente'
     else:
         return ''
 
-@app.route('/agregar_cliente', methods=['GET', 'POST'])
-def add_cliente():
-    cliente = Cliente()
-    cliente_form = ClienteForm(obj=cliente)
-    if request.method == 'POST':
-        contraseña = request.form['contraseña']
-        if cliente_form.validate_on_submit():
-            Cliente.establece_contraseña(cliente, contraseña)
-            cliente_form.populate_obj(cliente)
-            ClienteLogic.add_cliente(cliente)
-        return redirect(url_for('get_all_clientes'))
-    return render_template('alta_cliente.html', cliente_agregar=cliente_form)
+
+@app.route('/regresar_pagina_anterior')
+def regresar_pagina_anterior():
+    return render_template(request.referrer)
