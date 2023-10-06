@@ -93,6 +93,8 @@ def home():
 def logout():
     # Elimino los datos de la sesión del cliente
     session.pop('cliente', None)
+    # Elimino el carrito
+    app.config['CARRITO'] = []
     return redirect(url_for('login'))
 
 
@@ -135,8 +137,7 @@ def add_cliente():
 @app.route('/eliminar/<int:id>')
 def delete_cliente(id):
     try:
-        # El método delete_cliente(id) de la capa de lógica devuelve un mensaje de éxito
-        mensaje = ClienteLogic.delete_cliente(id)
+        ClienteLogic.delete_cliente(id)
         return redirect(url_for('get_all_clientes'))
     except IntegrityError as e:
         raise e
@@ -203,10 +204,6 @@ def busca_libros():
 @app.route('/agregar_al_carrito', methods=['POST'])
 def agregar_al_carrito():
     libro = request.form['libro']
-    print("Libro recibido:", libro)
-    json_str = libro
-    # Convertir la cadena de caracteres a un diccionario usando json.loads()
-    # Reemplaza comillas simples por comillas dobles y luego convierte a JSON
     libro_info = ast.literal_eval(libro)
 
     # Acceder a los atributos
