@@ -18,6 +18,11 @@ class DataLibro():
         Database.db.session.commit()
 
     @classmethod
+    def update_existencia(cls):
+        Database.db.session.commit()
+        return 'Existencia actualizada'
+
+    @classmethod
     def delete_libro(cls, id):
         libro = DataLibro.get_one_libro(id)
 

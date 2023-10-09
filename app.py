@@ -25,7 +25,6 @@ from logic.pedido_logic import PedidoLogic
 from logic.categoria_logic import CategoriaLogic
 from logic.libro_logic import LibroLogic
 from logic.autor_logic import AutorLogic
-import json
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = Database.configura_conexion()
@@ -171,7 +170,7 @@ def get_libros_by_author(autor):
     for libro in libros:
         libro['en_carrito'] = any(item['titulo'] == libro['titulo'] for item in carrito)
     if libros is not None:
-        return render_template("libros_por_autor.html", librosPorAutor = libros, carrito_de_pedidos=carrito)
+        return render_template("libros_por_autor.html", librosPorAutor=libros, carrito_de_pedidos=carrito)
 
 
 @app.route('/libros/genre/<genero>', methods=['GET'])
@@ -223,6 +222,18 @@ def eliminar_libro_carrito(titulo):
     for i, libro in enumerate(app.config['CARRITO']):
         if libro['titulo'] == titulo:
             index_to_remove = i
+            libro_a_remover = LibroLogic.get_libros_by_titulo(titulo)
+            # Verifico que el libro exista en la base de datos
+            if libro_a_remover is None:
+                lib = Libro()
+                lib.titulo = libro['titulo']
+                lib.existencia = True
+                lib.isbn = libro['isbn']
+                LibroLogic.add_libro(lib)
+                print(f'Título: {lib.titulo}')
+            else:
+                libro_a_remover.existencia = True
+                LibroLogic.update_existencia()
             break
 
     # Si se encontró el libro, elimínalo del carrito
@@ -236,7 +247,7 @@ def eliminar_libro_carrito(titulo):
 @app.route('/carrito')
 def mostrar_carrito():
     carrito = app.config['CARRITO']
-    return render_template('carrito_de_pedidos.html', carrito_de_pedidos = carrito)
+    return render_template('carrito_de_pedidos.html', carrito_de_pedidos=carrito)
 
 
 @app.route('/confirmar_pedido', methods=['POST'])

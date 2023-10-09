@@ -16,6 +16,11 @@ class LibroLogic():
         DataLibro.add_libro(libro)
 
     @classmethod
+    def update_existencia(cls):
+        DataLibro.update_existencia()
+        return 'Existencia actualizada'
+
+    @classmethod
     def delete_libro(cls, id):
         DataLibro.delete_libro(id)
 
