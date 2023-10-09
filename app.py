@@ -290,8 +290,3 @@ def confirmar_pedido():
         return 'Pedido realizado exitosamente'
     else:
         return ''
-
-
-@app.route('/regresar_pagina_anterior')
-def regresar_pagina_anterior():
-    return render_template(request.referrer)
