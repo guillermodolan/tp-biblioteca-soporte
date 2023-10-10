@@ -26,10 +26,10 @@ class DataLibro():
     def delete_libro(cls, id):
         libro = DataLibro.get_one_libro(id)
 
-        #Elimino al libro
+        # Elimino al libro
         Database.db.session.delete(libro)
 
-        #Guardo los cambios en la base de datos
+        # Guardo los cambios en la base de datos
         Database.db.session.commit()
 
 
@@ -38,5 +38,4 @@ class DataLibro():
     @classmethod
     def get_libro_by_titulo(cls, titulo):
         libro = Libro.query.filter(Libro.titulo.ilike(f'%{titulo}%')).first()
-        print('Tipo de dato de libro: ', type(libro))
         return libro

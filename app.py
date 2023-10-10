@@ -1,5 +1,5 @@
 import ast
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from flask import Flask, render_template, url_for, redirect, request, session
 from flask_mail import Message, Mail
@@ -280,7 +280,13 @@ def confirmar_pedido():
                 fecha_actual = datetime.now()
                 # Convertir la fecha a una cadena (string) en un formato específico
                 fecha_actual_str = fecha_actual.strftime('%Y-%m-%d')
-                pedido.fecha = fecha_actual_str
+
+                # Agrega 7 días a la fecha actual
+                fecha_devolucion = fecha_actual + timedelta(days=7)
+                fecha_devolucion_str = fecha_devolucion.strftime('%Y-%m-%d')
+
+                pedido.fecha_pedido = fecha_actual_str
+                pedido.fecha_devolucion = fecha_devolucion_str
 
                 # Agrego el id del cliente al pedido
                 cliente_data = session.get('cliente')
