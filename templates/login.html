@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Iniciar Sesión</title>
+</head>
+<body>
+    <h1>Iniciar Sesión</h1>
+    <form method="POST">
+        <label for="nombre_usuario">Nombre de Usuario</label>
+        <input type="text" name="nombre_usuario" required><br>
+        <label for="contraseña">Contraseña</label>
+        <input type="password" name="contraseña" required><br>
+        <input type="submit" value="Iniciar Sesión">
+    </form>
+    <a href="{{url_for('add_cliente')}}">Registrarme</a><br><br>
+    <p>Si es nuevo en el sistema, cree una cuenta con el link "Registrarme"</p>
+</body>
+</html>

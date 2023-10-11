@@ -1,0 +1,33 @@
+<!-- PÁGINA DONDE PODRÁ VERSE LOS PEDIDOS QUE TIENE EL CLIENTE EN SU CARRITO -->
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Carrito de Pedidos</title>
+</head>
+<body>
+    <h1>Carrito de Pedidos</h1>
+
+    <ul>
+        {% for libro in carrito_de_pedidos %}
+            <li>
+                <strong>Título:</strong> {{ libro.titulo }}<br>
+                <strong>Autor(es):</strong> {{ libro.autores|join(', ') }}<br>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <form action="/confirmar_pedido" method="post">
+        <button type="submit">Confirmar Pedido</button>
+    </form>
+
+    <a href="{{url_for('alquiler_libros')}}">Agregar otro libro</a>
+    <a href="{{url_for('home')}}">Volver al inicio</a>
+</body>
+</html>
+
+
+
+
+

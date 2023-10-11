@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 
+
 class Database:
     # Inicialización del objeto db de sqlalchemy. Esto es la conexión hacia la base de datos
     # utilizando SQLAlchemy.
@@ -9,7 +10,7 @@ class Database:
     def configura_conexion(cls) -> str:
         # Configuro la conexión a la base de datos
         USER_DB = 'postgres'
-        PASS_DB = 'cUeNtaPosTgrE2023---'
+        PASS_DB = 'eneasuno'
         HOST_DB = 'localhost'
         PORT_DB = '5432'
         NAME_DB = 'konigari'

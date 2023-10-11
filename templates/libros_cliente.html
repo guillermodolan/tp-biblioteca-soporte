@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Historial Libros</title>
+</head>
+<body>
+    <h1>Libros a devolver</h1>
+    <div>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Titulo</th>
+                <th>ISBN</th>
+                <th>Categoria</th>
+                <th>Autor</th>
+                <th>Fecha de Pedido</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ped in aDevolverParam %}
+                <!-- Buscar la forma de usar funciones Python con Jinja2 -->
+                {% set lib = LibroLogic.get_one_libro(ped.id_libro) %}
+                {% set cat = CategoriaLogic.get_one_categoria(lib.id_categoria) %}
+                <tr>
+                    <td>{{lib.titulo}}</td>
+                    <td>{{lib.isbn}}</td>
+                    <td>{{cat.descripcion}}</td>
+                    <td>Autor</td>
+                    <td>{{ped.fecha}}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    <h1>Libros devueltos</h1>
+    <div>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Titulo</th>
+                <th>ISBN</th>
+                <th>Categoria</th>
+                <th>Autor</th>
+                <th>Fecha de Pedido</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ped in devueltosParam %}
+                <!-- Buscar la forma de usar funciones Python con Jinja2 -->
+                {% set lib = LibroLogic.get_one_libro(ped.id_libro) %}
+                {% set cat = CategoriaLogic.get_one_categoria(lib.id_categoria) %}
+                <tr>
+                    <td>{{lib.titulo}}</td>
+                    <td>{{lib.isbn}}</td>
+                    <td>{{cat.descripcion}}</td>
+                    <td>Autor</td>
+                    <td>{{ped.fecha}}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</body>
+</html>
