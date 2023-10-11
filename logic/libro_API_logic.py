@@ -20,9 +20,6 @@ class LibroAPILogic:
                         autores = libro.get("author_name", ["Autor no disponible"])
                         isbn_list = libro.get("isbn", ["ISBN no disponible"])
 
-                        # Filtrar los ISBN que comienzan con '978'
-                        #isbns_con_prefijo_978 = [isbn for isbn in isbn_list if isbn.startswith('978')]
-
                         # Obtener solo el primer código ISBN si hay al menos uno
                         primer_isbn = isbn_list[0] if isbn_list else "ISBN no disponible"
 
