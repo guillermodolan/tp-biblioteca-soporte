@@ -4,7 +4,7 @@ from flask_migrate import Migrate
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import ObjectDeletedError, StaleDataError
 from werkzeug.exceptions import NotFound
-
+# flask --app app.py --debug run
 from data.database import Database
 from entity_models.cliente_form import ClienteForm
 from entity_models.pedido_form import PedidoForm
@@ -249,16 +249,3 @@ def mostrar_carrito():
 #         return ''
 #     else:
 #         return ''
-
-@app.route('/agregar_cliente', methods=['GET', 'POST'])
-def add_cliente():
-    cliente = Cliente()
-    cliente_form = ClienteForm(obj=cliente)
-    if request.method == 'POST':
-        contraseña = request.form['contraseña']
-        if cliente_form.validate_on_submit():
-            Cliente.establece_contraseña(cliente, contraseña)
-            cliente_form.populate_obj(cliente)
-            ClienteLogic.add_cliente(cliente)
-        return redirect(url_for('get_all_clientes'))
-    return render_template('alta_cliente.html', cliente_agregar=cliente_form)
