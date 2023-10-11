@@ -1,13 +1,6 @@
 from entity_models.libro_model import Libro
 from data.database import Database
 
-
-# get_all
-# get_one
-# add
-# delete
-
-
 class DataLibro():
     @classmethod
     def get_all_libros(cls):
@@ -25,6 +18,11 @@ class DataLibro():
         Database.db.session.commit()
 
     @classmethod
+    def update_existencia(cls):
+        Database.db.session.commit()
+        return 'Existencia actualizada'
+
+    @classmethod
     def delete_libro(cls, id):
         libro = DataLibro.get_one_libro(id)
 
@@ -33,3 +31,11 @@ class DataLibro():
 
         # Guardo los cambios en la base de datos
         Database.db.session.commit()
+
+
+    # Método que servirá para buscar un libro por título. Esto nos servirá para cuando se confirman
+    # libros a un pedido, que no se creen 2 veces en la base de datos.
+    @classmethod
+    def get_libro_by_titulo(cls, titulo):
+        libro = Libro.query.filter(Libro.titulo.ilike(f'%{titulo}%')).first()
+        return libro

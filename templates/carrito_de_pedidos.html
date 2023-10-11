@@ -9,25 +9,30 @@
 <body>
     <h1>Carrito de Pedidos</h1>
 
+    {% if carrito_de_pedidos|length > 3 %}
+        <p>Solo puede alquilar 3 libros.</p>
+    {% endif %}
+
+
     <ul>
         {% for libro in carrito_de_pedidos %}
             <li>
                 <strong>Título:</strong> {{ libro.titulo }}<br>
                 <strong>Autor(es):</strong> {{ libro.autores|join(', ') }}<br>
+                <a href="{{ url_for('eliminar_libro_carrito', titulo=libro.titulo) }}" class="btn btn-danger">Eliminar</a>
             </li>
         {% endfor %}
     </ul>
 
     <form action="/confirmar_pedido" method="post">
-        <button type="submit">Confirmar Pedido</button>
+        <button type="submit" {% if carrito_de_pedidos|length >  3 %}disabled{% endif %}>Confirmar Pedido</button>
     </form>
 
-    <a href="{{url_for('alquiler_libros')}}">Agregar otro libro</a>
+    {% if carrito_de_pedidos|length < 3 %}
+        <a href="{{url_for('alquiler_libros')}}" class="btn btn-primary">Agregar otro libro</a>
+    {% else %}
+        <p>No puede agregar más libros, ha alcanzado el límite de 3 libros.</p>
+    {% endif %}
     <a href="{{url_for('home')}}">Volver al inicio</a>
 </body>
 </html>
-
-
-
-
-
