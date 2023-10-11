@@ -7,7 +7,7 @@ from flask_migrate import Migrate
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import ObjectDeletedError, StaleDataError
 from werkzeug.exceptions import NotFound
-
+# flask --app app.py --debug run
 from data.database import Database
 from entity_models.cliente_form import ClienteForm
 from entity_models.pedido_form import PedidoForm

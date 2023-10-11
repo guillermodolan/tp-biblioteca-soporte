@@ -11,8 +11,8 @@
         <thead>
             <tr>
                 <th>Titulo</th>
-                <th>ISBN</th>
                 <th>Autor</th>
+                <th>Fecha de Pedido</th>
                 <th>Fecha de Devolución</th>
             </tr>
         </thead>
@@ -21,8 +21,8 @@
                 <!-- Buscar la forma de usar funciones Python con Jinja2 -->
                 <tr>
                     <td>{{libADevolver[i].titulo}}</td>
-                    <td>{{libADevolver[i].isbn}}</td>
                     <td>Autor</td>
+                    <td>{{pedADevolver[i].fecha_pedido}}</td>
                     <td>{{pedADevolver[i].fecha_devolucion}}</td>
                 </tr>
             {% endfor %}
@@ -35,7 +35,6 @@
         <thead>
             <tr>
                 <th>Titulo</th>
-                <th>ISBN</th>
                 <th>Autor</th>
                 <th>Fecha de Pedido</th>
             </tr>
@@ -45,7 +44,6 @@
                 <!-- Buscar la forma de usar funciones Python con Jinja2 -->
                 <tr>
                     <td>{{libDevueltos[i].titulo}}</td>
-                    <td>{{libDevueltos[i].isbn}}</td>
                     <td>Autor</td>
                     <td>{{pedDevueltos[i].fecha_pedido}}</td>
                 </tr>
@@ -53,5 +51,7 @@
         </tbody>
     </table>
     </div>
+    <br>
+    <a href="{{url_for('home')}}">Volver</a>
 </body>
 </html>
