@@ -14,7 +14,7 @@
                     <strong>Autor(es):</strong> {{ libro.autores|join(', ') }}<br>
                     <form method="POST" action="/agregar_al_carrito">
                         <input type="hidden" name="libro" value="{{ libro }}">
-                        <button type="submit">Agregar al pedido</button>
+                        <button type="submit" {% if cant_pedidos_cliente >= 3 %}disabled{% endif %}>Agregar al pedido</button>
                     </form>
                 </li>
             {% endif %}
@@ -28,7 +28,6 @@
     {% endif %}
 </body>
 </html>
-Ahora, los libros que están en el carrito no deberían aparecer en el listado.
 
 
 
