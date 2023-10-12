@@ -196,11 +196,29 @@ def update_cliente(id):
 def get_libros_by_author(autor):
     libros = LibroAPILogic.get_libros_by_author(autor)
     carrito = app.config['CARRITO']
+    cant_libros_carrito = len(carrito)
+
+    # Obtener el cliente actual
+    cliente_data = session.get('cliente')
+    cliente = Cliente.from_dict(cliente_data)
+
+    # Obtener pedidos realizados por el cliente con estado True
+    pedidos_realizados = PedidoLogic.get_pedidos_by_cliente(cliente)
+
+    cant_pedidos_realizados = 0
+
+    for ped in pedidos_realizados:
+        if ped.estado == True:
+            cant_pedidos_realizados = cant_pedidos_realizados + 1
+
+    total_libros = cant_libros_carrito + cant_pedidos_realizados
+
+    print(f'Valor de total_libros: {total_libros}')
     # Agregar una bandera 'en_carrito' a cada libro para indicar si está en el carrito o no
     for libro in libros:
         libro['en_carrito'] = any(item['titulo'] == libro['titulo'] for item in carrito)
     if libros is not None:
-        return render_template("libros_por_autor.html", librosPorAutor=libros, carrito_de_pedidos=carrito)
+        return render_template("libros_por_autor.html", librosPorAutor=libros, carrito_de_pedidos=carrito, cant_pedidos_cliente=total_libros)
 
 
 @app.route('/libros/genre/<genero>', methods=['GET'])
@@ -276,7 +294,24 @@ def eliminar_libro_carrito(titulo):
 @app.route('/carrito')
 def mostrar_carrito():
     carrito = app.config['CARRITO']
-    return render_template('carrito_de_pedidos.html', carrito_de_pedidos=carrito)
+    cant_libros_carrito = len(carrito)
+
+    # Obtener el cliente actual
+    cliente_data = session.get('cliente')
+    cliente = Cliente.from_dict(cliente_data)
+
+    # Obtener pedidos realizados por el cliente con estado True
+    pedidos_realizados = PedidoLogic.get_pedidos_by_cliente(cliente)
+
+    cant_pedidos_realizados = 0
+
+    for ped in pedidos_realizados:
+        if ped.estado == True:
+            cant_pedidos_realizados = cant_pedidos_realizados + 1
+
+    total_libros = cant_libros_carrito + cant_pedidos_realizados
+
+    return render_template('carrito_de_pedidos.html', carrito_de_pedidos=carrito, cant_libros_totales=total_libros)
 
 
 @app.route('/confirmar_pedido', methods=['POST'])
@@ -295,10 +330,12 @@ def confirmar_pedido():
                 LibroLogic.add_libro(libro)
         for elem in carrito:
             pedido = Pedido()
+
             # PARTE DE VALIDACIÓN
             # Por regla de negocio 3 en el documento 'Narrativa TPI', validamos que el libro que
             # se quiere alquilar no esté ya alquilado.
             libro_con_existencia = LibroLogic.valida_existencia_libro(elem['titulo'])
+            print(f'Libro: {libro_con_existencia}')
 
             if libro_con_existencia is not None:
                 pedido.id_libro = libro_con_existencia.id_libro
