@@ -2,13 +2,7 @@ from entity_models.autor_model import Autor
 from data.database import Database
 
 
-# get_all
-# get_one
-# add
-# delete
-
-
-class DataAutor():
+class DataAutor:
     @classmethod
     def get_all_autores(cls):
         autores = Autor.query.order_by('id_autor')
@@ -25,11 +19,13 @@ class DataAutor():
         Database.db.session.commit()
 
     @classmethod
+    def get_author_by_name(cls, nombre):
+        autor = Autor.query.filter_by(nombre=nombre).first()
+        return autor
+
+
+    @classmethod
     def delete_autor(cls, id):
         autor = DataAutor.get_one_autor(id)
-
-        # Elimino al autor
         Database.db.session.delete(autor)
-
-        # Guardo los cambios en la base de datos
         Database.db.session.commit()

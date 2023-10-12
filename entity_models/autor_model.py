@@ -8,4 +8,3 @@ db = Database.db
 class Autor(db.Model):
     id_autor = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100))
-    apellido = db.Column(db.String(100))

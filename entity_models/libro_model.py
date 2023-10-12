@@ -7,7 +7,7 @@ db = Database.db
 # vamos a utilizar nuestro objeto 'db', y vamos a extender de la clase Model
 class Libro(db.Model):
     id_libro = db.Column(db.Integer, primary_key=True)
-    isbn = db.Column(db.String(13))
+    isbn = db.Column(db.String(30))
     titulo = db.Column(db.String(100))
     existencia = db.Column(db.Boolean)
     id_categoria = db.Column(db.Integer, db.ForeignKey('categoria.id_categoria'))
