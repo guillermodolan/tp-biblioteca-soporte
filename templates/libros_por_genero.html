@@ -7,11 +7,16 @@
     <h1>Libros de Open Library</h1>
     <ul>
         {% for libro in librosPorGenero %}
-            <li>
-                <strong>Título:</strong> {{ libro.titulo }}<br>
-                <strong>Autor(es):</strong> {{ libro.autores|join(', ') }}<br>
-                <strong>Código ISBN:</strong> {{ libro.isbn }}<br>
-            </li>
+            {% if not libro.en_carrito %}
+                <li>
+                    <strong>Título:</strong> {{ libro.titulo }}<br>
+                    <strong>Autor(es):</strong> {{ libro.autores|join(', ') }}<br>
+                    <form method="POST" action="/agregar_al_carrito">
+                        <input type="hidden" name="libro" value="{{ libro }}">
+                        <button type="submit" {% if cant_pedidos_cliente >= 3 %}disabled{% endif %}>Agregar al pedido</button>
+                    </form>
+                </li>
+            {% endif %}
         {% endfor %}
     </ul>
 </body>

@@ -19,3 +19,8 @@ class AutorLogic:
     @classmethod
     def delete_autor(cls, id):
         DataAutor.delete_autor(id)
+
+    @classmethod
+    def get_author_by_name(cls, nombre):
+        autor = DataAutor.get_author_by_name(nombre)
+        return autor
