@@ -1,7 +1,7 @@
 from entity_models.libro_model import Libro
 from data.database import Database
 
-class DataLibro():
+class DataLibro:
     @classmethod
     def get_all_libros(cls):
         libros = Libro.query.order_by('id_libro')

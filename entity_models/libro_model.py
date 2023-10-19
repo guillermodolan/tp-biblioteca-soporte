@@ -12,3 +12,6 @@ class Libro(db.Model):
     existencia = db.Column(db.Boolean)
     id_categoria = db.Column(db.Integer, db.ForeignKey('categoria.id_categoria'))
     categoria = db.relationship("Categoria", backref=db.backref("categoria", uselist=False))
+
+    # Agrega la relación con la tabla intermedia LibroAutor
+    autores = db.relationship('Autor', secondary='libro_autor', back_populates='libros')

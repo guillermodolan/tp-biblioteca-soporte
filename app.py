@@ -14,6 +14,7 @@ from entity_models.pedido_form import PedidoForm
 from entity_models.categoria_form import CategoriaForm
 from entity_models.libro_form import LibroForm
 from entity_models.autor_form import AutorForm
+from entity_models.libro_autor_model import LibroAutor
 from entity_models.cliente_model import Cliente
 from entity_models.pedido_model import Pedido
 from entity_models.categoria_model import Categoria
@@ -21,6 +22,7 @@ from entity_models.libro_model import Libro
 from entity_models.autor_model import Autor
 from logic.cliente_logic import ClienteLogic
 from logic.libro_API_logic import LibroAPILogic
+from logic.libro_autor_logic import LibroAutorLogic
 from logic.pedido_logic import PedidoLogic
 from logic.categoria_logic import CategoriaLogic
 from logic.libro_logic import LibroLogic
@@ -333,6 +335,7 @@ def mostrar_carrito():
 @app.route('/confirmar_pedido', methods=['POST'])
 def confirmar_pedido():
     if request.method == 'POST':
+        libro_autor = LibroAutor()
         carrito = app.config['CARRITO']
         for elem in carrito:
             # PARTE DE VALIDACIÓN
@@ -344,13 +347,29 @@ def confirmar_pedido():
                 libro.existencia = True
                 libro.isbn = elem['isbn']
                 LibroLogic.add_libro(libro)
-            autor_buscado = AutorLogic.get_author_by_name(elem['autores'])
+                # Busco el libro que se creó en la base de datos, para guardar su id
+                # en la relacion Libro_Autor
+                libro_a_relacionar = LibroLogic.get_libros_by_titulo(elem['titulo'])
+                # Valido que exista el libro que se acaba de crear en la base de datos
+                if libro_a_relacionar is not None:
+                    libro_autor.id_libro = libro_a_relacionar.id_libro
+            else:
+                libro_autor.id_libro = libro_buscado.id_libro
+            autor_buscado = AutorLogic.get_author_by_name(str(elem['autores']).strip('[]'))
             if autor_buscado is None:
                 autor = Autor()
-                autor.nombre = elem['autores']
+                autor.nombre = str(elem['autores']).strip('[]')
+                AutorLogic.add_autor(autor)
+                # Busco el autor que se creó en la base de datos, para guardar su id
+                # en la relacion Libro_Autor
+                autor_a_relacionar = AutorLogic.get_author_by_name(str(elem['autores']).strip('[]'))
+                # Valido que exista el autor que se acaba de crear en la base de datos
+                if autor_a_relacionar is not None:
+                    libro_autor.id_autor = autor_a_relacionar.id_autor
+            else:
+                libro_autor.id_autor = autor_buscado.id_autor
         for elem in carrito:
             pedido = Pedido()
-
             # PARTE DE VALIDACIÓN
             # Por regla de negocio 3 en el documento 'Narrativa TPI', validamos que el libro que
             # se quiere alquilar no esté ya alquilado.
@@ -377,6 +396,7 @@ def confirmar_pedido():
                 cliente_data = session.get('cliente')
                 cliente_id = cliente_data.get('id_cliente')
                 pedido.id_cliente = cliente_id
+                LibroAutorLogic.add_libro_autor(libro_autor)
                 PedidoLogic.add_pedido(pedido)
         return 'Pedido realizado exitosamente'
     else:
