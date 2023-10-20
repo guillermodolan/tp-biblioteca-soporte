@@ -25,7 +25,7 @@
     </ul>
 
     <form action="/confirmar_pedido" method="post">
-        <button type="submit" {% if cant_libros_totales >  3 %}disabled{% endif %}>Confirmar Pedido</button>
+        <button type="submit" {% if cant_libros_totales >  3 or carrito_de_pedidos|length == 0 %}disabled{% endif %}>Confirmar Pedido</button>
     </form>
 
     {% if cant_libros_totales < 3 %}

@@ -314,6 +314,7 @@ def mostrar_carrito():
     carrito = app.config['CARRITO']
     cant_libros_carrito = len(carrito)
 
+
     # Obtener el cliente actual
     cliente_data = session.get('cliente')
     cliente = Cliente.from_dict(cliente_data)
