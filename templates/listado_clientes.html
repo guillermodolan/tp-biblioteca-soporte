@@ -27,17 +27,19 @@
             {% for cli in clientesParam %}
                 <tr>
                     <td>{{cli.id_cliente}}</td>
-                    <td>{{cli.nombre_usuario}}</td>
                     <td>{{cli.nombre}}</td>
                     <td>{{cli.apellido}}</td>
-                    <td>{{cli.telefono}}</td>
                     <td>{{cli.email}}</td>
+                    <td>{{cli.nombre_usuario}}</td>
+                    <td>{{cli.telefono}}</td>
                     <td>{{cli.usuario_telegram}}</td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
+<br>
+<a href="{{url_for('home')}}">Volver</a>
 
 </body>
 </html>

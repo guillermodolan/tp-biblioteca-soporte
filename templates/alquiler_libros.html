@@ -5,19 +5,22 @@
     <title>Alquiler de libros</title>
 </head>
 <body>
-<h1>Página para alquilar libros</h1>
-<form action="/busca_libros" method="post">
-    <div>
-        <!-- Seteo por default al radioButton de 'Buscar por autor' -->
-        <input type="radio" name="opcion" value="autor" checked> Buscar por autor
-        <input type="radio" name="opcion" value="genero"> Buscar por género
-    </div>
-    <p>
-        <input type="text" name="buscador" placeholder="Ingrese autor o género">
-    </p>
-    <div>
-        <button type="submit">Buscar</button>
-    </div>
-</form>
+    <h1>Página para alquilar libros</h1>
+    <form action="/busca_libros" method="post">
+        <div>
+            <!-- Seteo por default al radioButton de 'Buscar por autor' -->
+            <input type="radio" name="opcion" value="autor" checked> Buscar por autor
+            <input type="radio" name="opcion" value="genero"> Buscar por género
+        </div>
+        <p>
+            <input type="text" name="buscador" placeholder="Ingrese autor o género">
+        </p>
+        <div>
+            <button type="submit">Buscar</button>
+        </div>
+    </form>
+    <br>
+    <a href="{{url_for('home')}}">Home</a>
+    <a href="{{url_for('mostrar_carrito')}}">Carrito</a>
 </body>
 </html>
