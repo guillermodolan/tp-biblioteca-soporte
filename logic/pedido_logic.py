@@ -24,3 +24,8 @@ class PedidoLogic:
     @classmethod
     def delete_pedido(cls, id):
         DataPedido.delete_pedido(id)
+
+    @classmethod
+    def get_pedidos_2_dias_de_devolucion(cls, fecha):
+        pedidos = DataPedido.get_pedidos_2_dias_de_devolucion(fecha)
+        return pedidos

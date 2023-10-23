@@ -29,9 +29,10 @@ class DataPedido():
     @classmethod
     def delete_pedido(cls, id):
         pedido = DataPedido.get_one_pedido(id)
-
-        # Elimino al pedido
         Database.db.session.delete(pedido)
-
-        # Guardo los cambios en la base de datos
         Database.db.session.commit()
+
+    @classmethod
+    def get_pedidos_2_dias_de_devolucion(cls, fecha):
+        pedidos = Pedido.query.filter_by(fecha_devolucion=fecha).all()
+        return pedidos

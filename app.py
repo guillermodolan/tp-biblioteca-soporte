@@ -96,20 +96,27 @@ def logout():
     return redirect(url_for('login'))
 
 
-@app.route('/enviar_correo')
-def enviar_correo():
-    destinatario = 'eneasparatore@gmail.com'
-    asunto = 'Prueba de mensaje'
-    mensaje = 'Hi! Mr Eneas. I want you!'
 
-    msg = Message(asunto, recipients=[destinatario])
-    msg.body = mensaje
+@app.route('/enviar_correo_dos_dias_antes')
+def enviar_correo_dos_dias_antes():
+    today = datetime.now()
+    two_days_from_now = today + timedelta(days=2)
+    two_days_from_now_str = two_days_from_now.strftime('%Y-%m-%d')
 
-    try:
+    pedidos_a_enviar = PedidoLogic.get_pedidos_2_dias_de_devolucion(two_days_from_now_str)
+
+    for pedido in pedidos_a_enviar:
+        cliente = Cliente.query.get(pedido.id_cliente)
+
+        # Crea el mensaje del correo
+        asunto = 'Recordatorio de devolución'
+        mensaje = 'Recuerda que tu libro debe devolverse en dos días. Gracias por tu preferencia.'
+        msg = Message(asunto, recipients=[cliente.email])
+        msg.body = mensaje
+
+        # Envía el correo
         mail.send(msg)
-        return 'Correo electrónico enviado con éxito'
-    except Exception as e:
-        return f'Error al enviar el correo electrónico: {str(e)}'
+    return 'Correo enviado'
 
 
 @app.route('/get_all_clientes')
@@ -388,6 +395,11 @@ def confirmar_pedido():
 
                 # Agrega 7 días a la fecha actual
                 fecha_devolucion = fecha_actual + timedelta(days=7)
+
+                # LA LÍNEA DE ABAJO ES PARA HACER PRUEBAS PARA PROBAR EL ENVÍO DEL
+                # CORREO ELECTRÓNICO
+                # fecha_devolucion = fecha_actual + timedelta(days=2)
+
                 fecha_devolucion_str = fecha_devolucion.strftime('%Y-%m-%d')
 
                 pedido.fecha_pedido = fecha_actual_str
