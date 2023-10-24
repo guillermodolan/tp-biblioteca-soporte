@@ -411,6 +411,8 @@ def confirmar_pedido():
                 pedido.id_cliente = cliente_id
                 LibroAutorLogic.add_libro_autor(libro_autor)
                 PedidoLogic.add_pedido(pedido)
+                # Elimino el carrito
+                app.config['CARRITO'] = []
         return 'Pedido realizado exitosamente'
     else:
         return ''
