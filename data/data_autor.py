@@ -1,5 +1,10 @@
+from sqlalchemy import func
+
 from entity_models.autor_model import Autor
 from data.database import Database
+from entity_models.libro_autor_model import LibroAutor
+from entity_models.libro_model import Libro
+from entity_models.pedido_model import Pedido
 
 
 class DataAutor:
@@ -29,3 +34,17 @@ class DataAutor:
         autor = DataAutor.get_one_autor(id)
         Database.db.session.delete(autor)
         Database.db.session.commit()
+
+    @classmethod
+    def autor_mas_leido_en_un_mes(cls, mes, año):
+        resultados = (
+            Database.db.session.query(Autor.nombre, func.count(Libro.id_libro))
+            .join(Libro.autores)
+            .join(LibroAutor, Libro.id_libro == LibroAutor.id_libro)
+            .join(Pedido, Pedido.id_libro == LibroAutor.id_libro)
+            .filter(func.extract('month', func.to_date(Pedido.fecha_pedido, 'YYYY-MM-DD')) == mes,
+                    func.extract('year', func.to_date(Pedido.fecha_pedido, 'YYYY-MM-DD')) == año)
+            .group_by(Autor.nombre)
+            .all()
+        )
+        return resultados

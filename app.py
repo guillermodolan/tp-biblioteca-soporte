@@ -20,6 +20,7 @@ from entity_models.pedido_model import Pedido
 from entity_models.categoria_model import Categoria
 from entity_models.libro_model import Libro
 from entity_models.autor_model import Autor
+from graphics.autores_mas_leidos_en_un_mes import AutorMasLeidoEnUnMesGrafico
 from logic.cliente_logic import ClienteLogic
 from logic.libro_API_logic import LibroAPILogic
 from logic.libro_autor_logic import LibroAutorLogic
@@ -416,3 +417,11 @@ def confirmar_pedido():
         return 'Pedido realizado exitosamente'
     else:
         return ''
+
+
+@app.route('/autor_mas_leido')
+def autor_mas_leido():
+    mes = 10
+    año = 2023
+    AutorMasLeidoEnUnMesGrafico.crea_grafico(mes, año)
+    return 'Hecho'
