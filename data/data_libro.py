@@ -1,6 +1,7 @@
 from entity_models.libro_model import Libro
 from data.database import Database
 
+
 class DataLibro:
     @classmethod
     def get_all_libros(cls):
@@ -31,7 +32,6 @@ class DataLibro:
 
         # Guardo los cambios en la base de datos
         Database.db.session.commit()
-
 
     # Método que servirá para buscar un libro por título. Esto nos servirá para cuando se confirman
     # libros a un pedido, que no se creen 2 veces en la base de datos.

@@ -21,7 +21,7 @@
                 <!-- Buscar la forma de usar funciones Python con Jinja2 -->
                 <tr>
                     <td>{{libADevolver[i].titulo}}</td>
-                    <td>Autor</td>
+                    <td>{{autADevolver[i].nombre}}</td>
                     <td>{{pedADevolver[i].fecha_pedido}}</td>
                     <td>{{pedADevolver[i].fecha_devolucion}}</td>
                 </tr>
@@ -44,7 +44,7 @@
                 <!-- Buscar la forma de usar funciones Python con Jinja2 -->
                 <tr>
                     <td>{{libDevueltos[i].titulo}}</td>
-                    <td>Autor</td>
+                    <td>{{autDevueltos[i].nombre}}</td>
                     <td>{{pedDevueltos[i].fecha_pedido}}</td>
                 </tr>
             {% endfor %}

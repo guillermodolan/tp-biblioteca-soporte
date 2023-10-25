@@ -125,7 +125,6 @@ def get_all_clientes():
     return render_template('listado_clientes.html', clientesParam=clientes)
 
 
-# WIP
 @app.route('/historial_libros')
 def historial_libros():
     cliente_data = session.get('cliente')
@@ -136,24 +135,31 @@ def historial_libros():
         devueltos = []
         lib_a_dev = []
         lib_dev = []
+        aut_a_dev = []
+        aut_dev = []
         for pedido in pedidos:
             libro = LibroLogic.get_one_libro(pedido.id_libro)
+            libro_autor = LibroAutorLogic.get_libro_autor(pedido.id_libro)
+            autor = Autor()
+            for lib_aut in libro_autor:
+                autor = AutorLogic.get_one_autor(lib_aut.id_autor)
             if pedido.estado:
                 a_devolver.append(pedido)
                 lib_a_dev.append(libro)
+                aut_a_dev.append(autor)
             else:
                 devueltos.append(pedido)
                 lib_dev.append(libro)
+                aut_dev.append(autor)
         rango_a_dev = range(len(a_devolver))
         rango_dev = range(len(devueltos))
         return render_template('libros_cliente.html', pedADevolver=a_devolver, pedDevueltos=devueltos,
                                libADevolver=lib_a_dev, libDevueltos=lib_dev,
+                               autADevolver=aut_a_dev, autDevueltos=aut_dev,
                                rangoADevolver=rango_a_dev, rangoDevueltos=rango_dev)
     else:
         return redirect(url_for('login'))
 
-
-# EndWIP
 
 @app.route('/eliminar/<int:id>')
 def delete_cliente(id):
@@ -363,19 +369,20 @@ def confirmar_pedido():
                     libro_autor.id_libro = libro_a_relacionar.id_libro
             else:
                 libro_autor.id_libro = libro_buscado.id_libro
-            autor_buscado = AutorLogic.get_author_by_name(str(elem['autores']).strip('[]'))
+            autor_buscado = AutorLogic.get_author_by_name(str(elem['autores']).strip("[]'"))
             if autor_buscado is None:
                 autor = Autor()
-                autor.nombre = str(elem['autores']).strip('[]')
+                autor.nombre = str(elem['autores']).strip("[]'")
                 AutorLogic.add_autor(autor)
                 # Busco el autor que se creó en la base de datos, para guardar su id
                 # en la relacion Libro_Autor
-                autor_a_relacionar = AutorLogic.get_author_by_name(str(elem['autores']).strip('[]'))
+                autor_a_relacionar = AutorLogic.get_author_by_name(str(elem['autores']).strip("[]'"))
                 # Valido que exista el autor que se acaba de crear en la base de datos
                 if autor_a_relacionar is not None:
                     libro_autor.id_autor = autor_a_relacionar.id_autor
             else:
                 libro_autor.id_autor = autor_buscado.id_autor
+            LibroAutorLogic.add_libro_autor(libro_autor)
         for elem in carrito:
             pedido = Pedido()
             # PARTE DE VALIDACIÓN
@@ -409,7 +416,6 @@ def confirmar_pedido():
                 cliente_data = session.get('cliente')
                 cliente_id = cliente_data.get('id_cliente')
                 pedido.id_cliente = cliente_id
-                LibroAutorLogic.add_libro_autor(libro_autor)
                 PedidoLogic.add_pedido(pedido)
                 # Elimino el carrito
                 app.config['CARRITO'] = []
