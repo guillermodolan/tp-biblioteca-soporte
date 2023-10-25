@@ -24,3 +24,8 @@ class AutorLogic:
     def get_author_by_name(cls, nombre):
         autor = DataAutor.get_author_by_name(nombre)
         return autor
+
+    @classmethod
+    def autor_mas_leido_en_un_mes(cls, mes, año):
+        resultados = DataAutor.autor_mas_leido_en_un_mes(mes, año)
+        return resultados
