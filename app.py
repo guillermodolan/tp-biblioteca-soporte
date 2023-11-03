@@ -137,25 +137,31 @@ def historial_libros():
         lib_dev = []
         aut_a_dev = []
         aut_dev = []
+        cat_a_dev = []
+        cat_dev = []
         for pedido in pedidos:
             libro = LibroLogic.get_one_libro(pedido.id_libro)
             libro_autor = LibroAutorLogic.get_libro_autor(pedido.id_libro)
             autor = Autor()
             for lib_aut in libro_autor:
                 autor = AutorLogic.get_one_autor(lib_aut.id_autor)
+            categoria = CategoriaLogic.get_one_categoria(libro.id_categoria)
             if pedido.estado:
                 a_devolver.append(pedido)
                 lib_a_dev.append(libro)
                 aut_a_dev.append(autor)
+                cat_a_dev.append(categoria)
             else:
                 devueltos.append(pedido)
                 lib_dev.append(libro)
                 aut_dev.append(autor)
+                cat_dev.append(categoria)
         rango_a_dev = range(len(a_devolver))
         rango_dev = range(len(devueltos))
         return render_template('libros_cliente.html', pedADevolver=a_devolver, pedDevueltos=devueltos,
                                libADevolver=lib_a_dev, libDevueltos=lib_dev,
                                autADevolver=aut_a_dev, autDevueltos=aut_dev,
+                               catADevolver=cat_a_dev, catDevueltos=cat_dev,
                                rangoADevolver=rango_a_dev, rangoDevueltos=rango_dev)
     else:
         return redirect(url_for('login'))
@@ -220,7 +226,7 @@ def get_libros_by_author(autor):
     cant_pedidos_realizados = 0
 
     for ped in pedidos_realizados:
-        if ped.estado == True:
+        if ped.estado:
             cant_pedidos_realizados = cant_pedidos_realizados + 1
 
     total_libros = cant_libros_carrito + cant_pedidos_realizados
@@ -250,7 +256,7 @@ def get_libros_by_genre(genero):
     cant_pedidos_realizados = 0
 
     for ped in pedidos_realizados:
-        if ped.estado == True:
+        if ped.estado:
             cant_pedidos_realizados = cant_pedidos_realizados + 1
 
     total_libros = cant_libros_carrito + cant_pedidos_realizados
@@ -289,10 +295,11 @@ def agregar_al_carrito():
     # Acceder a los atributos
     titulo = libro_info['titulo']
     autores = libro_info['autores']
+    categoria = libro_info['categoria']
     isbn = libro_info['isbn']
 
     # Agrego el libro al carrito de pedidos
-    app.config['CARRITO'].append({'titulo': titulo, 'autores': autores, 'isbn': isbn})
+    app.config['CARRITO'].append({'titulo': titulo, 'autores': autores, 'categoria': categoria, 'isbn': isbn})
     return redirect(url_for('mostrar_carrito'))
 
 
@@ -339,7 +346,7 @@ def mostrar_carrito():
     cant_pedidos_realizados = 0
 
     for ped in pedidos_realizados:
-        if ped.estado == True:
+        if ped.estado:
             cant_pedidos_realizados = cant_pedidos_realizados + 1
 
     total_libros = cant_libros_carrito + cant_pedidos_realizados
@@ -354,10 +361,21 @@ def confirmar_pedido():
         carrito = app.config['CARRITO']
         for elem in carrito:
             # PARTE DE VALIDACIÓN
+            libro = Libro()
+            categoria_buscada = CategoriaLogic.get_categoria_by_desc(str(elem['categoria']).strip("[]'"))
+            if categoria_buscada is None:
+                categoria = Categoria()
+                categoria.descripcion = str(elem['categoria']).strip("[]'")
+                CategoriaLogic.add_categoria(categoria)
+
+                categoria_a_relacionar = CategoriaLogic.get_categoria_by_desc((str(elem['categoria']).strip("[]'")))
+                if categoria_a_relacionar is not None:
+                    libro.id_categoria = categoria_a_relacionar.id_categoria
+            else:
+                libro.id_categoria = categoria_buscada.id_categoria
             # Verifico que los libros que están en el carrito no estén creados en la base de datos
             libro_buscado = LibroLogic.get_libros_by_titulo(elem['titulo'])
             if libro_buscado is None:
-                libro = Libro()
                 libro.titulo = elem['titulo']
                 libro.existencia = True
                 libro.isbn = elem['isbn']

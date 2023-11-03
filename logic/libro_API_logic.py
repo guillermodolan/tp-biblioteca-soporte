@@ -18,12 +18,16 @@ class LibroAPILogic:
                     for libro in data["docs"]:
                         titulo = libro.get("title", "Título no disponible")
                         autores = libro.get("author_name", ["Autor no disponible"])
+                        categoria_list = libro.get("subject", ["Categoría no disponible"])
                         isbn_list = libro.get("isbn", ["ISBN no disponible"])
 
                         # Obtener solo el primer código ISBN si hay al menos uno
                         primer_isbn = isbn_list[0] if isbn_list else "ISBN no disponible"
 
-                        libros.append({"titulo": titulo, "autores": autores, "isbn": primer_isbn})
+                        primer_categoria = categoria_list[0] if categoria_list else "Categoría no disponible"
+
+                        libros.append({"titulo": titulo, "autores": autores,
+                                       "categoria": primer_categoria, "isbn": primer_isbn})
                     return libros
             else:
                 return None
@@ -44,8 +48,13 @@ class LibroAPILogic:
                         titulo = libro.get("title", "Título no disponible")
                         autores = libro.get("authors", [])
                         autores_nombres = [autor["name"] for autor in autores]
+                        categoria = libro.get("subject", ["Categoría no disponible"])
                         isbn = libro.get("isbn", ["ISBN no disponible"])
-                        libros.append({"titulo": titulo, "autores": autores_nombres, "isbn": isbn})
+
+                        primer_categoria = categoria[0] if categoria else "Categoría no disponible"
+
+                        libros.append({"titulo": titulo, "autores": autores_nombres,
+                                       "categoria": primer_categoria, "isbn": isbn})
                     return libros
             else:
                 return None

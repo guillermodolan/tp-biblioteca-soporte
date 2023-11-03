@@ -12,6 +12,7 @@
             <tr>
                 <th>Titulo</th>
                 <th>Autor</th>
+                <th>Categoría</th>
                 <th>Fecha de Pedido</th>
                 <th>Fecha de Devolución</th>
             </tr>
@@ -22,6 +23,7 @@
                 <tr>
                     <td>{{libADevolver[i].titulo}}</td>
                     <td>{{autADevolver[i].nombre}}</td>
+                    <td>{{catADevolver[i].descripcion}}</td>
                     <td>{{pedADevolver[i].fecha_pedido}}</td>
                     <td>{{pedADevolver[i].fecha_devolucion}}</td>
                 </tr>
@@ -36,6 +38,7 @@
             <tr>
                 <th>Titulo</th>
                 <th>Autor</th>
+                <th>Categoría</th>
                 <th>Fecha de Pedido</th>
             </tr>
         </thead>
@@ -45,6 +48,7 @@
                 <tr>
                     <td>{{libDevueltos[i].titulo}}</td>
                     <td>{{autDevueltos[i].nombre}}</td>
+                    <td>{{catDevueltos[i].descripcion}}</td>
                     <td>{{pedDevueltos[i].fecha_pedido}}</td>
                 </tr>
             {% endfor %}

@@ -13,6 +13,11 @@ class CategoriaLogic:
         return categoria
 
     @classmethod
+    def get_categoria_by_desc(cls, descripcion):
+        categoria = DataCategoria.get_categoria_by_desc(descripcion)
+        return categoria
+
+    @classmethod
     def add_categoria(cls, categoria):
         DataCategoria.add_categoria(categoria)
 
