@@ -97,7 +97,6 @@ def logout():
     return redirect(url_for('login'))
 
 
-
 @app.route('/enviar_correo_dos_dias_antes')
 def enviar_correo_dos_dias_antes():
     today = datetime.now()
@@ -230,7 +229,8 @@ def get_libros_by_author(autor):
     for libro in libros:
         libro['en_carrito'] = any(item['titulo'] == libro['titulo'] for item in carrito)
     if libros is not None:
-        return render_template("libros_por_autor.html", librosPorAutor=libros, carrito_de_pedidos=carrito, cant_pedidos_cliente=total_libros)
+        return render_template("libros_por_autor.html", librosPorAutor=libros, carrito_de_pedidos=carrito,
+                               cant_pedidos_cliente=total_libros)
 
 
 @app.route('/libros/genre/<genero>', methods=['GET'])
@@ -259,7 +259,8 @@ def get_libros_by_genre(genero):
     for libro in libros:
         libro['en_carrito'] = any(item['titulo'] == libro['titulo'] for item in carrito)
     if libros is not None:
-        return render_template("libros_por_genero.html", librosPorGenero=libros, carrito_de_pedidos=carrito, cant_pedidos_cliente=total_libros)
+        return render_template("libros_por_genero.html", librosPorGenero=libros, carrito_de_pedidos=carrito,
+                               cant_pedidos_cliente=total_libros)
 
 
 @app.route('/alquiler_libros')
@@ -327,7 +328,6 @@ def eliminar_libro_carrito(titulo):
 def mostrar_carrito():
     carrito = app.config['CARRITO']
     cant_libros_carrito = len(carrito)
-
 
     # Obtener el cliente actual
     cliente_data = session.get('cliente')
@@ -402,11 +402,11 @@ def confirmar_pedido():
                 fecha_actual_str = fecha_actual.strftime('%Y-%m-%d')
 
                 # Agrega 7 días a la fecha actual
-                fecha_devolucion = fecha_actual + timedelta(days=7)
+                # fecha_devolucion = fecha_actual + timedelta(days=7)
 
                 # LA LÍNEA DE ABAJO ES PARA HACER PRUEBAS PARA PROBAR EL ENVÍO DEL
                 # CORREO ELECTRÓNICO
-                # fecha_devolucion = fecha_actual + timedelta(days=2)
+                fecha_devolucion = fecha_actual + timedelta(days=2)
 
                 fecha_devolucion_str = fecha_devolucion.strftime('%Y-%m-%d')
 

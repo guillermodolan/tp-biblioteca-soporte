@@ -10,5 +10,4 @@ class ClienteForm(FlaskForm):
     nombre_usuario = StringField('Nombre de usuario', validators=[DataRequired()])
     contraseña = StringField('Contraseña', validators=[DataRequired()])
     telefono = StringField('Teléfono', validators=[DataRequired()])
-    usuario_telegram = StringField('Usuario de Telegram', validators=[DataRequired()])
     guardar = SubmitField('Guardar')
