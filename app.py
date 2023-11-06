@@ -116,7 +116,7 @@ def enviar_correo_dos_dias_antes():
 
         # Envía el correo
         mail.send(msg)
-    return 'Correo enviado'
+    return render_template('mensaje.html', mensaje='Correo enviado')
 
 
 @app.route('/get_all_clientes')
@@ -438,14 +438,14 @@ def confirmar_pedido():
                 PedidoLogic.add_pedido(pedido)
                 # Elimino el carrito
                 app.config['CARRITO'] = []
-        return 'Pedido realizado exitosamente'
+        return render_template('mensaje.html', mensaje='Pedido realizado exitosamente')
     else:
-        return ''
+        return render_template('mensaje.html', mensaje='')
 
 
 @app.route('/autor_mas_leido')
 def autor_mas_leido():
-    mes = 10
+    mes = 11
     año = 2023
     AutorMasLeidoEnUnMesGrafico.crea_grafico(mes, año)
-    return 'Hecho'
+    return render_template('mensaje.html', mensaje='Hecho')
