@@ -13,8 +13,8 @@ class PedidoLogic:
         return pedido
 
     @classmethod
-    def get_pedidos_by_cliente(cls, cliente):
-        pedidos = DataPedido.get_pedidos_by_cliente(cliente)
+    def get_pedidos_by_persona(cls, persona):
+        pedidos = DataPedido.get_pedidos_by_persona(persona)
         return pedidos
 
     @classmethod

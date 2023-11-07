@@ -13,11 +13,11 @@ class DataPedido():
         return pedido
 
     @classmethod
-    def get_pedidos_by_cliente(cls, cliente):
+    def get_pedidos_by_persona(cls, persona):
         pedidos_total = DataPedido.get_all_pedidos()
         pedidos = []
         for pedido in pedidos_total:
-            if pedido.id_cliente == cliente.id_cliente:
+            if pedido.id_persona == persona.id:
                 pedidos.append(pedido)
         return pedidos
 

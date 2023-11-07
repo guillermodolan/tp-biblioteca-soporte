@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edición de persona</title>
+</head>
+<body>
+<h1>Edición de persona</h1>
+<form method="POST">
+  {{persona_editar.csrf_token}}
+  <p>
+    {{persona_editar.nombre.label}} <br/>
+    {{persona_editar.nombre(size=70)}}
+  </p>
+  <p>
+    {{persona_editar.apellido.label}} <br/>
+    {{persona_editar.apellido(size=70)}}
+  </p>
+  <p>
+    {{persona_editar.email.label}} <br/>
+    {{persona_editar.email(size=30)}}
+  </p>
+  <p>
+    {{persona_editar.nombre_usuario.label}} <br/>
+    {{persona_editar.nombre_usuario(size=70)}}
+  </p>
+  <p>
+    {{persona_editar.contraseña.label}} <br/>
+    {{persona_editar.contraseña(size=70)}}
+  </p>
+  <p>
+    {{persona_editar.telefono.label}} <br/>
+    {{persona_editar.telefono(size=70)}}
+  </p>
+  <p>
+    {{persona_editar.tipo_persona.label}} <br/>
+    {{persona_editar.tipo_persona()}}
+  </p>
+  <p>
+    {{persona_editar.guardar()}}
+    <a href="{{url_for('get_all_personas')}}">Cancelar</a>
+  </p>
+</form>
+</body>
+</html>

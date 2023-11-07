@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Alta de persona</title>
+</head>
+<body>
+<h1>Alta de persona</h1>
+<form method="POST">
+  {{ persona_agregar.csrf_token }}
+  <p>
+    {{ persona_agregar.nombre.label }} <br/>
+    {{ persona_agregar.nombre(size=70) }}
+  </p>
+  <p>
+    {{ persona_agregar.apellido.label }} <br/>
+    {{ persona_agregar.apellido(size=70) }}
+  </p>
+  <p>
+    {{ persona_agregar.email.label }} <br/>
+    {{ persona_agregar.email(size=30) }}
+  </p>
+  <p>
+    {{ persona_agregar.nombre_usuario.label }} <br/>
+    {{ persona_agregar.nombre_usuario(size=70) }}
+  </p>
+  <p>
+    {{ persona_agregar.contraseña.label }} <br/>
+    {{ persona_agregar.contraseña(size=70, type="password") }}
+  </p>
+  <p>
+    {{ persona_agregar.tipo_persona.label }} <br/>
+    {{ persona_agregar.tipo_persona }}
+  </p>
+  <p>
+    {{ persona_agregar.telefono.label }} <br/>
+    {{ persona_agregar.telefono(size=70) }}
+  </p>
+  <p>
+    {{ persona_agregar.guardar() }}
+    <a href="{{ url_for('login') }}">Cancelar</a>
+  </p>
+</form>
+</body>
+</html>

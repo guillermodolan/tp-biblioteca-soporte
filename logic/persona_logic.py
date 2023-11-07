@@ -1,25 +1,22 @@
-import sqlalchemy.exc
-from sqlalchemy.exc import IntegrityError, DBAPIError
+from sqlite3 import IntegrityError
+
+import sqlalchemy
+from flask import Flask
+from sqlalchemy.exc import DBAPIError
 from sqlalchemy.orm.exc import ObjectDeletedError, StaleDataError, FlushError
 from werkzeug.exceptions import NotFound
 
-from data.data_cliente import DataCliente
-from entity_models.cliente_model import Cliente
-from flask import Flask
+from data.data_persona import DataPersona
+from entity_models.persona_model import Persona
 
 app = Flask(__name__)
 
-# Variable creada para lanzar un mensaje al usuario de cómo resultó la operación que intenta
-# realizar
-mensaje = ''
-
-
-class ClienteLogic:
+class PersonaLogic:
     @classmethod
-    def get_all_clientes(cls):
+    def get_all_personas(cls):
         try:
-            clientes = DataCliente.get_all_clientes()
-            return clientes
+            personas = DataPersona.get_all_personas()
+            return personas
         except sqlalchemy.exc.SQLAlchemyError as e:
             app.logger.debug(f'Error en la base de datos: {e}')
             raise e
@@ -28,23 +25,23 @@ class ClienteLogic:
             raise e
 
     @classmethod
-    def get_one_cliente(cls, id):
+    def get_one_persona(cls, id):
         try:
-            cliente = DataCliente.get_one_cliente(id)
-            return cliente
+            persona = DataPersona.get_one_persona(id)
+            return persona
         except NotFound as e:
-            app.logger.debug(f'Cliente no encontrado: {e}')
+            app.logger.debug(f'Persona no encontrada: {e}')
             raise e
         except Exception as e:
             app.logger.debug(f'Error inesperado: {e}')
             raise e
 
     @classmethod
-    def add_cliente(cls, cliente):
+    def add_persona(cls, persona):
         global mensaje
         try:
-            DataCliente.add_cliente(cliente)
-            mensaje = f'Cliente {cliente.nombre} {cliente.apellido} insertado exitosamente'
+            DataPersona.add_persona(persona)
+            mensaje = f'Persona {persona.nombre} {persona.apellido} insertada exitosamente'
             # return mensaje
         except sqlalchemy.exc.SQLAlchemyError as e:
             app.logger.debug(f'Error en la base de datos: {e}')
@@ -54,10 +51,10 @@ class ClienteLogic:
             raise e
 
     @classmethod
-    def get_cliente_by_user(cls, username):
+    def get_persona_by_user(cls, username):
         try:
-            cliente = DataCliente.get_cliente_by_user(username)
-            return cliente
+            persona = DataPersona.get_persona_by_user(username)
+            return persona
         except sqlalchemy.exc.SQLAlchemyError as e:
             app.logger.debug(f"Error de base de datos: {e}")
             raise e
@@ -68,11 +65,11 @@ class ClienteLogic:
     @classmethod
     def valida_credenciales(cls, username, contraseña):
         try:
-            cliente = ClienteLogic.get_cliente_by_user(username)
-            if cliente:
-                clienteValidado = Cliente.valida_contraseña(cliente, contraseña)
-                if clienteValidado is not None:
-                    return cliente
+            persona = PersonaLogic.get_persona_by_user(username)
+            if persona:
+                persona_validada = Persona.valida_contraseña(persona, contraseña)
+                if persona_validada is not None:
+                    return persona
                 else:
                     return None
             return None
@@ -84,12 +81,10 @@ class ClienteLogic:
             raise e
 
     @classmethod
-    def delete_cliente(cls, id):
+    def delete_persona(cls, id):
         global mensaje
         try:
-            DataCliente.delete_cliente(id)
-            # mensaje = f'Cliente {cliente.nombre} {cliente.apellido} eliminado exitosamente'
-            # return mensaje
+            DataPersona.delete_persona(id)
         except IntegrityError as e:
             raise e
         except ObjectDeletedError as e:
@@ -98,11 +93,11 @@ class ClienteLogic:
             raise e
 
     @classmethod
-    def update_cliente(cls, cliente):
+    def update_persona(cls, persona):
         global mensaje
         try:
-            DataCliente.update_cliente(cliente)
-            mensaje = f'Cliente {cliente.nombre} {cliente.apellido} actualizado exitosamente'
+            DataPersona.update_persona(persona)
+            mensaje = f'Cliente {persona.nombre} {persona.apellido} actualizada exitosamente'
             app.logger.debug(mensaje)
             return mensaje
         except IntegrityError as e:

@@ -7,27 +7,27 @@ from flask_migrate import Migrate
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import ObjectDeletedError, StaleDataError
 from werkzeug.exceptions import NotFound
-# flask --app app.py --debug run
 from data.database import Database
-from entity_models.cliente_form import ClienteForm
+from entity_models.persona_model import Persona
+from entity_models.registro_form import RegistroForm
 from entity_models.pedido_form import PedidoForm
 from entity_models.categoria_form import CategoriaForm
 from entity_models.libro_form import LibroForm
 from entity_models.autor_form import AutorForm
 from entity_models.libro_autor_model import LibroAutor
-from entity_models.cliente_model import Cliente
+from entity_models.persona_model import Persona
 from entity_models.pedido_model import Pedido
 from entity_models.categoria_model import Categoria
 from entity_models.libro_model import Libro
 from entity_models.autor_model import Autor
 from graphics.autores_mas_leidos_en_un_mes import AutorMasLeidoEnUnMesGrafico
-from logic.cliente_logic import ClienteLogic
 from logic.libro_API_logic import LibroAPILogic
 from logic.libro_autor_logic import LibroAutorLogic
 from logic.pedido_logic import PedidoLogic
 from logic.categoria_logic import CategoriaLogic
 from logic.libro_logic import LibroLogic
 from logic.autor_logic import AutorLogic
+from logic.persona_logic import PersonaLogic
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = Database.configura_conexion()
@@ -55,20 +55,20 @@ def inicio():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    cliente_data = session.get('cliente')
-    if cliente_data:
+    persona_data = session.get('persona_logueda')
+    if persona_data:
         return redirect(url_for('home'))
 
     elif request.method == 'POST':
         nombre_usuario = request.form['nombre_usuario']
         contraseña = request.form['contraseña']
 
-        cliente = ClienteLogic.valida_credenciales(nombre_usuario, contraseña)
-        if cliente:
-            # Guardo al cliente en la sesión, para que se mueva por la página web sin necesidad
-            # de loguearse a cada momento.
-            session['cliente'] = cliente.to_dict()
-            return render_template('home.html', clienteLogueado=cliente)
+        persona = PersonaLogic.valida_credenciales(nombre_usuario, contraseña)
+        if persona:
+            # Guardo a la persona en la sesión, para que se mueva por la página web sin necesidad
+            # de loguearse a cada rato.
+            session['persona_logueda'] = persona.to_dict()
+            return render_template('home.html', persona_logueda=persona)
         else:
             return render_template('login.html')
     else:
@@ -77,12 +77,12 @@ def login():
 
 @app.route('/home')
 def home():
-    # Al cliente que guardé en la sesión en el método login(), lo accedo desde este método, el cual
+    # A la persona que guardé en la sesión en el método login(), lo accedo desde este método, el cual
     # es para la página principal
-    cliente_data = session.get('cliente')
-    if cliente_data:
-        cliente = Cliente.from_dict(cliente_data)
-        return render_template('home.html', clienteLogueado=cliente)
+    persona_data = session.get('persona_logueda')
+    if persona_data:
+        persona = Persona.from_dict(persona_data)
+        return render_template('home.html', persona_logueda=persona)
     else:
         return redirect(url_for('login'))
 
@@ -90,8 +90,8 @@ def home():
 # Ruta para manejar el cierre de sesión
 @app.route('/logout')
 def logout():
-    # Elimino los datos de la sesión del cliente
-    session.pop('cliente', None)
+    # Elimino los datos de la sesión de la persona
+    session.pop('persona_logueda', None)
     # Elimino el carrito
     app.config['CARRITO'] = []
     return redirect(url_for('login'))
@@ -106,12 +106,12 @@ def enviar_correo_dos_dias_antes():
     pedidos_a_enviar = PedidoLogic.get_pedidos_2_dias_de_devolucion(two_days_from_now_str)
 
     for pedido in pedidos_a_enviar:
-        cliente = Cliente.query.get(pedido.id_cliente)
+        persona = Persona.query.get(pedido.id_persona)
 
         # Crea el mensaje del correo
         asunto = 'Recordatorio de devolución'
         mensaje = 'Recuerda que tu libro debe devolverse en dos días. Gracias por tu preferencia.'
-        msg = Message(asunto, recipients=[cliente.email])
+        msg = Message(asunto, recipients=[persona.email])
         msg.body = mensaje
 
         # Envía el correo
@@ -119,18 +119,18 @@ def enviar_correo_dos_dias_antes():
     return render_template('mensaje.html', mensaje='Correo enviado')
 
 
-@app.route('/get_all_clientes')
-def get_all_clientes():
-    clientes = ClienteLogic.get_all_clientes()
-    return render_template('listado_clientes.html', clientesParam=clientes)
+@app.route('/get_all_personas')
+def get_all_personas():
+    personas = PersonaLogic.get_all_personas()
+    return render_template('listado_personas.html', personas_param=personas)
 
 
 @app.route('/historial_libros')
 def historial_libros():
-    cliente_data = session.get('cliente')
-    if cliente_data:
-        cliente = Cliente.from_dict(cliente_data)
-        pedidos = PedidoLogic.get_pedidos_by_cliente(cliente)
+    persona_data = session.get('persona_logueda')
+    if persona_data:
+        persona = Persona.from_dict(persona_data)
+        pedidos = PedidoLogic.get_pedidos_by_persona(persona)
         a_devolver = []
         devueltos = []
         lib_a_dev = []
@@ -167,11 +167,11 @@ def historial_libros():
         return redirect(url_for('login'))
 
 
-@app.route('/eliminar/<int:id>')
-def delete_cliente(id):
+@app.route('/eliminar_persona/<int:id>')
+def delete_persona(id):
     try:
-        ClienteLogic.delete_cliente(id)
-        return redirect(url_for('get_all_clientes'))
+        PersonaLogic.delete_persona(id)
+        return redirect(url_for('get_all_personas'))
     except IntegrityError as e:
         raise e
     except ObjectDeletedError as e:
@@ -180,32 +180,32 @@ def delete_cliente(id):
         raise e
 
 
-@app.route('/agregar_cliente', methods=['GET', 'POST'])
-def add_cliente():
-    cliente = Cliente()
-    cliente_form = ClienteForm(obj=cliente)
+@app.route('/agregar_persona', methods=['GET', 'POST'])
+def add_persona():
+    persona = Persona()
+    registro_form = RegistroForm(obj=persona)
     if request.method == 'POST':
         contraseña = request.form['contraseña']
-        if cliente_form.validate_on_submit():
-            Cliente.establece_contraseña(cliente, contraseña)
-            cliente_form.populate_obj(cliente)
-            ClienteLogic.add_cliente(cliente)
-        return redirect(url_for('get_all_clientes'))
-    return render_template('alta_cliente.html', cliente_agregar=cliente_form)
+        if registro_form.validate_on_submit():
+            Persona.establece_contraseña(persona, contraseña)
+            registro_form.populate_obj(persona)
+            PersonaLogic.add_persona(persona)
+        return redirect(url_for('get_all_personas'))
+    return render_template('alta_persona.html', persona_agregar=registro_form)
 
 
-@app.route('/editar_cliente/<int:id>', methods=['GET', 'POST'])
-def update_cliente(id):
+@app.route('/editar_persona/<int:id>', methods=['GET', 'POST'])
+def update_persona(id):
     try:
-        cliente = ClienteLogic.get_one_cliente(id)
-        cliente_form = ClienteForm(obj=cliente)
+        persona = PersonaLogic.get_one_persona(id)
+        registro_form = RegistroForm(obj=persona)
         if request.method == 'POST':
-            if cliente_form.validate_on_submit():
-                cliente_form.populate_obj(cliente)
+            if registro_form.validate_on_submit():
+                registro_form.populate_obj(persona)
                 # El método update_cliente(id) de la capa de lógica devuelve un mensaje de éxito
-                mensaje = ClienteLogic.update_cliente(cliente)
-                return redirect(url_for('get_all_clientes'))
-        return render_template('editar_cliente.html', cliente_editar=cliente_form)
+                mensaje = PersonaLogic.update_persona(persona)
+                return redirect(url_for('get_all_personas'))
+        return render_template('editar_persona.html', persona_editar=registro_form)
     except NotFound as e:
         raise e
 
@@ -216,12 +216,12 @@ def get_libros_by_author(autor):
     carrito = app.config['CARRITO']
     cant_libros_carrito = len(carrito)
 
-    # Obtener el cliente actual
-    cliente_data = session.get('cliente')
-    cliente = Cliente.from_dict(cliente_data)
+    # Obtener la persona actual
+    persona_data = session.get('persona_logueda')
+    persona = Persona.from_dict(persona_data)
 
     # Obtener pedidos realizados por el cliente con estado True
-    pedidos_realizados = PedidoLogic.get_pedidos_by_cliente(cliente)
+    pedidos_realizados = PedidoLogic.get_pedidos_by_persona(persona)
 
     cant_pedidos_realizados = 0
 
@@ -246,12 +246,12 @@ def get_libros_by_genre(genero):
 
     cant_libros_carrito = len(carrito)
 
-    # Obtener el cliente actual
-    cliente_data = session.get('cliente')
-    cliente = Cliente.from_dict(cliente_data)
+    # Obtener la persona actual
+    persona_data = session.get('persona_logueda')
+    persona = Persona.from_dict(persona_data)
 
     # Obtener pedidos realizados por el cliente con estado True
-    pedidos_realizados = PedidoLogic.get_pedidos_by_cliente(cliente)
+    pedidos_realizados = PedidoLogic.get_pedidos_by_persona(persona)
 
     cant_pedidos_realizados = 0
 
@@ -337,11 +337,11 @@ def mostrar_carrito():
     cant_libros_carrito = len(carrito)
 
     # Obtener el cliente actual
-    cliente_data = session.get('cliente')
-    cliente = Cliente.from_dict(cliente_data)
+    persona_data = session.get('persona_logueda')
+    persona = Persona.from_dict(persona_data)
 
     # Obtener pedidos realizados por el cliente con estado True
-    pedidos_realizados = PedidoLogic.get_pedidos_by_cliente(cliente)
+    pedidos_realizados = PedidoLogic.get_pedidos_by_persona(persona)
 
     cant_pedidos_realizados = 0
 
@@ -432,9 +432,9 @@ def confirmar_pedido():
                 pedido.fecha_devolucion = fecha_devolucion_str
 
                 # Agrego el id del cliente al pedido
-                cliente_data = session.get('cliente')
-                cliente_id = cliente_data.get('id_cliente')
-                pedido.id_cliente = cliente_id
+                persona_data = session.get('persona_logueda')
+                persona_id = persona_data.get('id')
+                pedido.id_persona = persona_id
                 PedidoLogic.add_pedido(pedido)
                 # Elimino el carrito
                 app.config['CARRITO'] = []
