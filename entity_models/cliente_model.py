@@ -14,7 +14,6 @@ class Cliente(db.Model):
     nombre_usuario = db.Column(db.String(80), nullable=False)
     contraseña = db.Column(db.Text, nullable=False)
     telefono = db.Column(db.String(25))
-    usuario_telegram = db.Column(db.String(50))
 
     # Método usado para serializar el objeto Cliente, para poder guardarlo en la sesión.
     def to_dict(self):
@@ -25,8 +24,7 @@ class Cliente(db.Model):
             'email': self.email,
             'nombre_usuario': self.nombre_usuario,
             'contraseña': self.contraseña,
-            'telefono': self.telefono,
-            'usuario_telegram': self.usuario_telegram
+            'telefono': self.telefono
         }
 
     # Método usado para deserializar el objeto JSON, y convertirlo a Cliente
@@ -40,7 +38,6 @@ class Cliente(db.Model):
         cliente.nombre_usuario = data['nombre_usuario']
         cliente.contraseña = data['contraseña']
         cliente.telefono = data['telefono']
-        cliente.usuario_telegram = data['usuario_telegram']
         return cliente
 
     def establece_contraseña(self, contraseña):

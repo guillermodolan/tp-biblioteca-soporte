@@ -97,7 +97,6 @@ def logout():
     return redirect(url_for('login'))
 
 
-
 @app.route('/enviar_correo_dos_dias_antes')
 def enviar_correo_dos_dias_antes():
     today = datetime.now()
@@ -117,7 +116,7 @@ def enviar_correo_dos_dias_antes():
 
         # Envía el correo
         mail.send(msg)
-    return 'Correo enviado'
+    return render_template('mensaje.html', mensaje='Correo enviado')
 
 
 @app.route('/get_all_clientes')
@@ -126,7 +125,6 @@ def get_all_clientes():
     return render_template('listado_clientes.html', clientesParam=clientes)
 
 
-# WIP
 @app.route('/historial_libros')
 def historial_libros():
     cliente_data = session.get('cliente')
@@ -137,24 +135,37 @@ def historial_libros():
         devueltos = []
         lib_a_dev = []
         lib_dev = []
+        aut_a_dev = []
+        aut_dev = []
+        cat_a_dev = []
+        cat_dev = []
         for pedido in pedidos:
             libro = LibroLogic.get_one_libro(pedido.id_libro)
+            libro_autor = LibroAutorLogic.get_libro_autor(pedido.id_libro)
+            autor = Autor()
+            for lib_aut in libro_autor:
+                autor = AutorLogic.get_one_autor(lib_aut.id_autor)
+            categoria = CategoriaLogic.get_one_categoria(libro.id_categoria)
             if pedido.estado:
                 a_devolver.append(pedido)
                 lib_a_dev.append(libro)
+                aut_a_dev.append(autor)
+                cat_a_dev.append(categoria)
             else:
                 devueltos.append(pedido)
                 lib_dev.append(libro)
+                aut_dev.append(autor)
+                cat_dev.append(categoria)
         rango_a_dev = range(len(a_devolver))
         rango_dev = range(len(devueltos))
         return render_template('libros_cliente.html', pedADevolver=a_devolver, pedDevueltos=devueltos,
                                libADevolver=lib_a_dev, libDevueltos=lib_dev,
+                               autADevolver=aut_a_dev, autDevueltos=aut_dev,
+                               catADevolver=cat_a_dev, catDevueltos=cat_dev,
                                rangoADevolver=rango_a_dev, rangoDevueltos=rango_dev)
     else:
         return redirect(url_for('login'))
 
-
-# EndWIP
 
 @app.route('/eliminar/<int:id>')
 def delete_cliente(id):
@@ -215,7 +226,7 @@ def get_libros_by_author(autor):
     cant_pedidos_realizados = 0
 
     for ped in pedidos_realizados:
-        if ped.estado == True:
+        if ped.estado:
             cant_pedidos_realizados = cant_pedidos_realizados + 1
 
     total_libros = cant_libros_carrito + cant_pedidos_realizados
@@ -224,7 +235,8 @@ def get_libros_by_author(autor):
     for libro in libros:
         libro['en_carrito'] = any(item['titulo'] == libro['titulo'] for item in carrito)
     if libros is not None:
-        return render_template("libros_por_autor.html", librosPorAutor=libros, carrito_de_pedidos=carrito, cant_pedidos_cliente=total_libros)
+        return render_template("libros_por_autor.html", librosPorAutor=libros, carrito_de_pedidos=carrito,
+                               cant_pedidos_cliente=total_libros)
 
 
 @app.route('/libros/genre/<genero>', methods=['GET'])
@@ -244,7 +256,7 @@ def get_libros_by_genre(genero):
     cant_pedidos_realizados = 0
 
     for ped in pedidos_realizados:
-        if ped.estado == True:
+        if ped.estado:
             cant_pedidos_realizados = cant_pedidos_realizados + 1
 
     total_libros = cant_libros_carrito + cant_pedidos_realizados
@@ -253,7 +265,8 @@ def get_libros_by_genre(genero):
     for libro in libros:
         libro['en_carrito'] = any(item['titulo'] == libro['titulo'] for item in carrito)
     if libros is not None:
-        return render_template("libros_por_genero.html", librosPorGenero=libros, carrito_de_pedidos=carrito, cant_pedidos_cliente=total_libros)
+        return render_template("libros_por_genero.html", librosPorGenero=libros, carrito_de_pedidos=carrito,
+                               cant_pedidos_cliente=total_libros)
 
 
 @app.route('/alquiler_libros')
@@ -282,10 +295,11 @@ def agregar_al_carrito():
     # Acceder a los atributos
     titulo = libro_info['titulo']
     autores = libro_info['autores']
+    categoria = libro_info['categoria']
     isbn = libro_info['isbn']
 
     # Agrego el libro al carrito de pedidos
-    app.config['CARRITO'].append({'titulo': titulo, 'autores': autores, 'isbn': isbn})
+    app.config['CARRITO'].append({'titulo': titulo, 'autores': autores, 'categoria': categoria, 'isbn': isbn})
     return redirect(url_for('mostrar_carrito'))
 
 
@@ -322,7 +336,6 @@ def mostrar_carrito():
     carrito = app.config['CARRITO']
     cant_libros_carrito = len(carrito)
 
-
     # Obtener el cliente actual
     cliente_data = session.get('cliente')
     cliente = Cliente.from_dict(cliente_data)
@@ -333,7 +346,7 @@ def mostrar_carrito():
     cant_pedidos_realizados = 0
 
     for ped in pedidos_realizados:
-        if ped.estado == True:
+        if ped.estado:
             cant_pedidos_realizados = cant_pedidos_realizados + 1
 
     total_libros = cant_libros_carrito + cant_pedidos_realizados
@@ -348,10 +361,21 @@ def confirmar_pedido():
         carrito = app.config['CARRITO']
         for elem in carrito:
             # PARTE DE VALIDACIÓN
+            libro = Libro()
+            categoria_buscada = CategoriaLogic.get_categoria_by_desc(str(elem['categoria']).strip("[]'"))
+            if categoria_buscada is None:
+                categoria = Categoria()
+                categoria.descripcion = str(elem['categoria']).strip("[]'")
+                CategoriaLogic.add_categoria(categoria)
+
+                categoria_a_relacionar = CategoriaLogic.get_categoria_by_desc((str(elem['categoria']).strip("[]'")))
+                if categoria_a_relacionar is not None:
+                    libro.id_categoria = categoria_a_relacionar.id_categoria
+            else:
+                libro.id_categoria = categoria_buscada.id_categoria
             # Verifico que los libros que están en el carrito no estén creados en la base de datos
             libro_buscado = LibroLogic.get_libros_by_titulo(elem['titulo'])
             if libro_buscado is None:
-                libro = Libro()
                 libro.titulo = elem['titulo']
                 libro.existencia = True
                 libro.isbn = elem['isbn']
@@ -364,19 +388,20 @@ def confirmar_pedido():
                     libro_autor.id_libro = libro_a_relacionar.id_libro
             else:
                 libro_autor.id_libro = libro_buscado.id_libro
-            autor_buscado = AutorLogic.get_author_by_name(str(elem['autores']).strip('[]'))
+            autor_buscado = AutorLogic.get_author_by_name(str(elem['autores']).strip("[]'"))
             if autor_buscado is None:
                 autor = Autor()
-                autor.nombre = str(elem['autores']).strip('[]')
+                autor.nombre = str(elem['autores']).strip("[]'")
                 AutorLogic.add_autor(autor)
                 # Busco el autor que se creó en la base de datos, para guardar su id
                 # en la relacion Libro_Autor
-                autor_a_relacionar = AutorLogic.get_author_by_name(str(elem['autores']).strip('[]'))
+                autor_a_relacionar = AutorLogic.get_author_by_name(str(elem['autores']).strip("[]'"))
                 # Valido que exista el autor que se acaba de crear en la base de datos
                 if autor_a_relacionar is not None:
                     libro_autor.id_autor = autor_a_relacionar.id_autor
             else:
                 libro_autor.id_autor = autor_buscado.id_autor
+            LibroAutorLogic.add_libro_autor(libro_autor)
         for elem in carrito:
             pedido = Pedido()
             # PARTE DE VALIDACIÓN
@@ -395,11 +420,11 @@ def confirmar_pedido():
                 fecha_actual_str = fecha_actual.strftime('%Y-%m-%d')
 
                 # Agrega 7 días a la fecha actual
-                fecha_devolucion = fecha_actual + timedelta(days=7)
+                # fecha_devolucion = fecha_actual + timedelta(days=7)
 
                 # LA LÍNEA DE ABAJO ES PARA HACER PRUEBAS PARA PROBAR EL ENVÍO DEL
                 # CORREO ELECTRÓNICO
-                # fecha_devolucion = fecha_actual + timedelta(days=2)
+                fecha_devolucion = fecha_actual + timedelta(days=2)
 
                 fecha_devolucion_str = fecha_devolucion.strftime('%Y-%m-%d')
 
@@ -410,18 +435,17 @@ def confirmar_pedido():
                 cliente_data = session.get('cliente')
                 cliente_id = cliente_data.get('id_cliente')
                 pedido.id_cliente = cliente_id
-                LibroAutorLogic.add_libro_autor(libro_autor)
                 PedidoLogic.add_pedido(pedido)
                 # Elimino el carrito
                 app.config['CARRITO'] = []
-        return 'Pedido realizado exitosamente'
+        return render_template('mensaje.html', mensaje='Pedido realizado exitosamente')
     else:
-        return ''
+        return render_template('mensaje.html', mensaje='')
 
 
 @app.route('/autor_mas_leido')
 def autor_mas_leido():
-    mes = 10
+    mes = 11
     año = 2023
     AutorMasLeidoEnUnMesGrafico.crea_grafico(mes, año)
-    return 'Hecho'
+    return render_template('mensaje.html', mensaje='Hecho')

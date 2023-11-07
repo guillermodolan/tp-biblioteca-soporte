@@ -20,6 +20,11 @@ class DataCategoria():
         return categoria
 
     @classmethod
+    def get_categoria_by_desc(cls, descripcion):
+        categoria = Categoria.query.filter_by(descripcion=descripcion).first()
+        return categoria
+
+    @classmethod
     def add_categoria(cls, categoria):
         Database.db.session.add(categoria)
         Database.db.session.commit()

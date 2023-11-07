@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 
 from logic.autor_logic import AutorLogic
 
+
 class AutorMasLeidoEnUnMesGrafico:
 
     @classmethod
