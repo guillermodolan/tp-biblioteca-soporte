@@ -130,6 +130,7 @@ def historial_libros():
     persona_data = session.get('persona_logueda')
     if persona_data:
         persona = Persona.from_dict(persona_data)
+        # Obtengo los pedidos de la persona logueada
         pedidos = PedidoLogic.get_pedidos_by_persona(persona)
         a_devolver = []
         devueltos = []
@@ -140,6 +141,7 @@ def historial_libros():
         cat_a_dev = []
         cat_dev = []
         for pedido in pedidos:
+            # Busco los libros que están en los pedidos de la persona logueada
             libro = LibroLogic.get_one_libro(pedido.id_libro)
             libro_autor = LibroAutorLogic.get_libro_autor(pedido.id_libro)
             autor = Autor()
