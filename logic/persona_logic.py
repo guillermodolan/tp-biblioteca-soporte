@@ -2,7 +2,7 @@ from sqlite3 import IntegrityError
 
 import sqlalchemy
 from flask import Flask
-from sqlalchemy.exc import DBAPIError
+from sqlalchemy.exc import DBAPIError, SQLAlchemyError
 from sqlalchemy.orm.exc import ObjectDeletedError, StaleDataError, FlushError
 from werkzeug.exceptions import NotFound
 
@@ -18,6 +18,18 @@ class PersonaLogic:
             personas = DataPersona.get_all_personas()
             return personas
         except sqlalchemy.exc.SQLAlchemyError as e:
+            app.logger.debug(f'Error en la base de datos: {e}')
+            raise e
+        except Exception as e:
+            app.logger.debug(f'Error inesperado: {e}')
+            raise e
+
+    @classmethod
+    def get_clientes_con_pedidos_pendientes(cls):
+        try:
+            clientes_devolucion = DataPersona.get_clientes_con_pedidos_pendientes()
+            return clientes_devolucion
+        except SQLAlchemyError as e:
             app.logger.debug(f'Error en la base de datos: {e}')
             raise e
         except Exception as e:

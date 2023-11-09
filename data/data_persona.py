@@ -5,6 +5,7 @@ from sqlalchemy.orm.exc import ObjectDeletedError, StaleDataError, FlushError
 from werkzeug.exceptions import NotFound
 
 from data.database import Database
+from entity_models.pedido_model import Pedido
 from entity_models.persona_model import Persona
 
 app = Flask(__name__)
@@ -25,8 +26,24 @@ class DataPersona:
     @classmethod
     def get_all_clientes(cls):
         try:
-            # Filtrar las personas por tipo_persona igual a 'cliente'
             clientes = Persona.query.filter_by(tipo_persona='cliente').order_by(Persona.id)
+            return clientes
+        except SQLAlchemyError as e:
+            app.logger.debug(f'Error en la base de datos: {e}')
+            raise e
+        except Exception as e:
+            app.logger.debug(f'Error inesperado: {e}')
+            raise e
+
+    @classmethod
+    def get_clientes_con_pedidos_pendientes(cls):
+        try:
+            clientes = (
+                Persona.query
+                .join(Pedido, Persona.id == Pedido.id_persona)
+                .filter(Pedido.estado == True)
+                .all()
+            )
             return clientes
         except SQLAlchemyError as e:
             app.logger.debug(f'Error en la base de datos: {e}')

@@ -24,6 +24,14 @@
             </select>
         </div>
         <div>
+            <label for="anio">Selecciona un año:</label>
+            <select id="anio" name="anio">
+                {% for year in range(2010, 2026) %}
+                    <option value="{{ year }}">{{ year }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
             <button type="submit">Buscar</button>
         </div>
     </form>

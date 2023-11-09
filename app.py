@@ -463,7 +463,18 @@ def input_fecha_autor_mas_leido():
 
 @app.route('/autor_mas_leido', methods=['POST'])
 def autor_mas_leido():
-    mes = 11
-    año = 2023
-    AutorMasLeidoEnUnMesGrafico.crea_grafico(mes, año)
+    if request.method == 'POST':
+        mes = request.form.get('mes')
+        año = request.form.get('anio')
+        AutorMasLeidoEnUnMesGrafico.crea_grafico(mes, año)
     return render_template('mensaje.html', mensaje='Hecho')
+
+@app.route('/realizar_devolucion')
+def realizar_devolucion():
+    clientes_devolucion = PersonaLogic.get_clientes_con_pedidos_pendientes()
+    if clientes_devolucion is not None:
+        return render_template('clientes_pendientes_devolucion.html',
+                               clientes=clientes_devolucion)
+    else:
+        return render_template('mensaje.html',
+                               mensaje='No hay clientes pendientes de devolución')
