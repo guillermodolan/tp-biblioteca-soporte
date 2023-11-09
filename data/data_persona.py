@@ -21,6 +21,21 @@ class DataPersona:
         except Exception as e:
             app.logger.debug(f'Error inesperado: {e}')
             raise e
+
+    @classmethod
+    def get_all_clientes(cls):
+        try:
+            # Filtrar las personas por tipo_persona igual a 'cliente'
+            clientes = Persona.query.filter_by(tipo_persona='cliente').order_by(Persona.id)
+            return clientes
+        except SQLAlchemyError as e:
+            app.logger.debug(f'Error en la base de datos: {e}')
+            raise e
+        except Exception as e:
+            app.logger.debug(f'Error inesperado: {e}')
+            raise e
+
+
     @classmethod
     def add_persona(cls, persona):
         try:

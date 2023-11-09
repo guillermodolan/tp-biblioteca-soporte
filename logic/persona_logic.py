@@ -25,6 +25,18 @@ class PersonaLogic:
             raise e
 
     @classmethod
+    def get_all_clientes(cls):
+        try:
+            clientes = DataPersona.get_all_clientes()
+            return clientes
+        except sqlalchemy.exc.SQLAlchemyError as e:
+            app.logger.debug(f'Error en la base de datos: {e}')
+            raise e
+        except Exception as e:
+            app.logger.debug(f'Error inesperado: {e}')
+            raise e
+
+    @classmethod
     def get_one_persona(cls, id):
         try:
             persona = DataPersona.get_one_persona(id)

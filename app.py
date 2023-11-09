@@ -122,7 +122,15 @@ def enviar_correo_dos_dias_antes():
 @app.route('/get_all_personas')
 def get_all_personas():
     personas = PersonaLogic.get_all_personas()
-    return render_template('listado_personas.html', personas_param=personas)
+    return render_template('listado_personas.html', personas_param=personas,
+                           titulo = 'Personas')
+
+
+@app.route('/get_all_clientes')
+def get_all_clientes():
+    clientes = PersonaLogic.get_all_clientes()
+    return render_template('listado_personas.html', personas_param=clientes,
+                           titulo = 'Clientes')
 
 
 @app.route('/historial_libros')
@@ -444,8 +452,16 @@ def confirmar_pedido():
     else:
         return render_template('mensaje.html', mensaje='')
 
+@app.route('/estadisticas')
+def estadisticas():
+    return render_template('estadisticas.html')
 
-@app.route('/autor_mas_leido')
+@app.route('/input_fecha_autor_mas_leido')
+def input_fecha_autor_mas_leido():
+    return render_template('input_fecha_autor_mas_leido.html')
+
+
+@app.route('/autor_mas_leido', methods=['POST'])
 def autor_mas_leido():
     mes = 11
     año = 2023

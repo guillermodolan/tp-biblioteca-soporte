@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Listado de personas</title>
+    <title>Listado de {{ titulo }}</title>
 </head>
 <body>
-<h1>Listado de personas</h1>
+<h1>Listado de {{ titulo }}</h1>
 
 <div>
     <table border="1">
@@ -17,12 +17,10 @@
                 <th>Email</th>
                 <th>Nombre de usuario</th>
                 <th>Teléfono</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
-        <!--Este tablerow debe de repetirse tantas veces como elementos tengamos. Entonces usamos un ciclo for para iterar.
-        Esto se lee 'para cada cli en clientesParam'. Recordemos que clientesParam es la variable que se comparte
-        en el método render_template()-->
             {% for per in personas_param %}
                 <tr>
                     <td>{{per.id}}</td>
@@ -31,6 +29,7 @@
                     <td>{{per.email}}</td>
                     <td>{{per.nombre_usuario}}</td>
                     <td>{{per.telefono}}</td>
+                    <td><a href="{{url_for('update_persona', id=per.id)}}">Editar</a></td>
                 </tr>
             {% endfor %}
         </tbody>

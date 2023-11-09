@@ -14,8 +14,8 @@
 {% endif %}
 {% if persona_logueda.tipo_persona == 'administrador' %}
     <a href="">Realizar una devolución</a>
-    <a href="">Listado de clientes</a>
-    <a href="">Mostrar estadísticas</a>
+    <a href="{{ url_for('get_all_clientes') }}">Listado de clientes</a>
+    <a href="{{ url_for('estadisticas') }}">Mostrar estadísticas</a>
     <a href="">Enviar emails de recordatorios</a>
 {% endif %}
 <a href="{{url_for('logout')}}">Cerrar sesión</a>
