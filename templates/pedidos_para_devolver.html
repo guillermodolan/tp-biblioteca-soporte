@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pedidos a devolver</title>
+</head>
+<body>
+<h1>Pedidos por devolver de {{cliente.nombre}} {{cliente.apellido}}</h1>
+
+<div>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Fecha de pedido</th>
+                <th>Fecha de devolución</th>
+                <th>Estado</th>
+                <th>Título del libro</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ped in pedidos_para_devolver %}
+                <tr>
+                    <td>{{ped.numero_pedido}}</td>
+                    <td>{{ped.fecha_pedido}}</td>
+                    <td>{{ped.fecha_devolucion}}</td>
+                    {% if ped.estado == True %}
+                        <td>Pendiente de devolución</td>
+                    {% endif %}
+                    <td>{{ped.libro.titulo}}</td>
+                    <td><a href="{{url_for('finaliza_devolucion', id=ped.numero_pedido)}}">Realizar devolución</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<br>
+<a href="{{url_for('home')}}">Volver</a>
+
+</body>
+</html>

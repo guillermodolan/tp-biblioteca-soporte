@@ -116,7 +116,7 @@ def enviar_correo_dos_dias_antes():
 
         # Envía el correo
         mail.send(msg)
-    return render_template('mensaje.html', mensaje='Correo enviado')
+    return render_template('mensaje.html', mensaje='Correos enviados')
 
 
 @app.route('/get_all_personas')
@@ -180,8 +180,11 @@ def historial_libros():
 @app.route('/eliminar_persona/<int:id>')
 def delete_persona(id):
     try:
+        persona_logueada = obtener_persona_logueada()
         PersonaLogic.delete_persona(id)
-        return redirect(url_for('get_all_personas'))
+        return render_template('mensaje.html',
+                               mensaje='Persona eliminada correctamente',
+                               persona_logueda=persona_logueada)
     except IntegrityError as e:
         raise e
     except ObjectDeletedError as e:
@@ -192,6 +195,7 @@ def delete_persona(id):
 
 @app.route('/agregar_persona', methods=['GET', 'POST'])
 def add_persona():
+    persona_logueada = obtener_persona_logueada()
     persona = Persona()
     registro_form = RegistroForm(obj=persona)
     if request.method == 'POST':
@@ -200,21 +204,33 @@ def add_persona():
             Persona.establece_contraseña(persona, contraseña)
             registro_form.populate_obj(persona)
             PersonaLogic.add_persona(persona)
-        return redirect(url_for('get_all_personas'))
+            return render_template('mensaje.html',
+                                   mensaje='Persona insertada correctamente',
+                                   persona_logueda=persona_logueada)
+        else:
+            return render_template('mensaje.html',
+                                   mensaje='Error al insertar persona',
+                                   persona_logueda=persona_logueada)
     return render_template('alta_persona.html', persona_agregar=registro_form)
 
 
 @app.route('/editar_persona/<int:id>', methods=['GET', 'POST'])
 def update_persona(id):
     try:
+        persona_logueada = obtener_persona_logueada()
         persona = PersonaLogic.get_one_persona(id)
         registro_form = RegistroForm(obj=persona)
         if request.method == 'POST':
             if registro_form.validate_on_submit():
                 registro_form.populate_obj(persona)
-                # El método update_cliente(id) de la capa de lógica devuelve un mensaje de éxito
-                mensaje = PersonaLogic.update_persona(persona)
-                return redirect(url_for('get_all_personas'))
+                PersonaLogic.update_persona(persona)
+                return render_template('mensaje.html',
+                                       mensaje='Persona actualizada correctamente',
+                                       persona_logueda=persona_logueada)
+            else:
+                return render_template('mensaje.html',
+                                       mensaje='Error al actualizar persona',
+                                       persona_logueda=persona_logueada)
         return render_template('editar_persona.html', persona_editar=registro_form)
     except NotFound as e:
         raise e
@@ -452,9 +468,11 @@ def confirmar_pedido():
     else:
         return render_template('mensaje.html', mensaje='')
 
+
 @app.route('/estadisticas')
 def estadisticas():
     return render_template('estadisticas.html')
+
 
 @app.route('/input_fecha_autor_mas_leido')
 def input_fecha_autor_mas_leido():
@@ -469,12 +487,42 @@ def autor_mas_leido():
         AutorMasLeidoEnUnMesGrafico.crea_grafico(mes, año)
     return render_template('mensaje.html', mensaje='Hecho')
 
+
 @app.route('/realizar_devolucion')
 def realizar_devolucion():
+    persona_logueada = obtener_persona_logueada()
     clientes_devolucion = PersonaLogic.get_clientes_con_pedidos_pendientes()
     if clientes_devolucion is not None:
         return render_template('clientes_pendientes_devolucion.html',
                                clientes=clientes_devolucion)
     else:
         return render_template('mensaje.html',
-                               mensaje='No hay clientes pendientes de devolución')
+                               mensaje='No hay clientes pendientes de devolución',
+                               persona_logueada=persona_logueada)
+
+
+@app.route('/clientes_en_devolucion/<int:id>')
+def clientes_en_devolucion(id):
+    # Obtengo al cliente
+    cliente = PersonaLogic.get_one_persona(id)
+    pedidos_para_devolver = PedidoLogic.get_pedidos_by_persona_pendientes(cliente)
+    return render_template('pedidos_para_devolver.html', cliente=cliente,
+                           pedidos_para_devolver=pedidos_para_devolver)
+
+@app.route('/finaliza_devolucion/<int:id>')
+def finaliza_devolucion(id):
+    persona_logueada = obtener_persona_logueada()
+    pedido = PedidoLogic.get_one_pedido(id)
+    pedido.estado = False
+    PedidoLogic.update_pedido()
+    return render_template('mensaje.html',
+                           mensaje='Devolución realizada correctamente',
+                           persona_logueada=persona_logueada)
+
+
+def obtener_persona_logueada():
+    # Método para obtener la persona que está logueda en la sesión
+    persona_data = session.get('persona_logueda')
+    if persona_data:
+        persona_logueda = Persona.from_dict(persona_data)
+        return persona_logueda

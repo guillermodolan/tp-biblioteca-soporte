@@ -18,6 +18,16 @@ class PedidoLogic:
         return pedidos
 
     @classmethod
+    def get_pedidos_by_persona_pendientes(cls, persona):
+        pedidos_pendientes = []
+        pedidos = DataPedido.get_pedidos_by_persona(persona)
+        for ped in pedidos:
+            if ped.estado == True:
+                pedidos_pendientes.append(ped)
+        return pedidos_pendientes
+
+
+    @classmethod
     def add_pedido(cls, pedido):
         DataPedido.add_pedido(pedido)
 
@@ -29,3 +39,7 @@ class PedidoLogic:
     def get_pedidos_2_dias_de_devolucion(cls, fecha):
         pedidos = DataPedido.get_pedidos_2_dias_de_devolucion(fecha)
         return pedidos
+
+    @classmethod
+    def update_pedido(cls):
+        DataPedido.update_pedido()

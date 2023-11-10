@@ -117,13 +117,9 @@ class PersonaLogic:
             raise e
 
     @classmethod
-    def update_persona(cls, persona):
-        global mensaje
+    def update_persona(cls):
         try:
-            DataPersona.update_persona(persona)
-            mensaje = f'Cliente {persona.nombre} {persona.apellido} actualizada exitosamente'
-            app.logger.debug(mensaje)
-            return mensaje
+            DataPersona.update_persona()
         except IntegrityError as e:
             raise e
         except StaleDataError as e:

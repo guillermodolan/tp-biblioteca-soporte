@@ -18,6 +18,7 @@
                 <th>Nombre de usuario</th>
                 <th>Teléfono</th>
                 <th></th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -30,6 +31,7 @@
                     <td>{{per.nombre_usuario}}</td>
                     <td>{{per.telefono}}</td>
                     <td><a href="{{url_for('update_persona', id=per.id)}}">Editar</a></td>
+                    <td><a href="{{url_for('delete_persona', id=per.id)}}">Eliminar</a></td>
                 </tr>
             {% endfor %}
         </tbody>

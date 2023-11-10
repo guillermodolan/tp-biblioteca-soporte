@@ -7,6 +7,8 @@
 <body>
 <p>{{mensaje}}</p>
 <a href="{{url_for('home')}}">Volver al inicio</a>
-<a href="{{url_for('alquiler_libros')}}">Alquilar libro</a>
+{% if persona_logueada.tipo_persona == 'cliente' %}
+    <a href="{{url_for('alquiler_libros')}}">Alquilar libro</a>
+{% endif %}
 </body>
 </html>

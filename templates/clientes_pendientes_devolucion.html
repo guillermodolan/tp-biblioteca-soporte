@@ -29,7 +29,7 @@
                     <td>{{per.email}}</td>
                     <td>{{per.nombre_usuario}}</td>
                     <td>{{per.telefono}}</td>
-                    <td><a href="{{url_for('update_persona', id=per.id)}}">Realizar una devolución</a></td>
+                    <td><a href="{{url_for('clientes_en_devolucion', id=per.id)}}">Realizar una devolución</a></td>
                 </tr>
             {% endfor %}
         </tbody>

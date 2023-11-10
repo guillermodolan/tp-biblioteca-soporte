@@ -103,7 +103,7 @@ class DataPersona:
             raise e
 
     @classmethod
-    def update_persona(cls, persona):
+    def update_persona(cls):
         try:
             Database.db.session.commit()
         except IntegrityError as e:

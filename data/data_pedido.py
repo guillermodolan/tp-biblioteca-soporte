@@ -1,3 +1,8 @@
+from sqlite3 import IntegrityError
+
+from sqlalchemy.exc import DBAPIError
+from sqlalchemy.orm.exc import StaleDataError, FlushError
+
 from entity_models.pedido_model import Pedido
 from data.database import Database
 
@@ -36,3 +41,16 @@ class DataPedido():
     def get_pedidos_2_dias_de_devolucion(cls, fecha):
         pedidos = Pedido.query.filter_by(fecha_devolucion=fecha).all()
         return pedidos
+
+    @classmethod
+    def update_pedido(cls):
+        try:
+            Database.db.session.commit()
+        except IntegrityError as e:
+            raise e
+        except StaleDataError as e:
+            raise e
+        except FlushError as e:
+            raise e
+        except DBAPIError as e:
+            raise e
