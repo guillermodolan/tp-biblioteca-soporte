@@ -275,6 +275,8 @@ def update_persona(id):
 def get_libros_by_author(autor):
     persona_logueada = obtener_persona_logueada()
     if persona_logueada.tipo_persona == 'cliente':
+        # Busco los pedidos pendientes del cliente
+        pedidos_pendientes = PedidoLogic.get_pedidos_by_persona_pendientes(persona_logueada)
         libros = LibroAPILogic.get_libros_by_author(autor)
         carrito = app.config['CARRITO']
         cant_libros_carrito = len(carrito)
@@ -290,11 +292,14 @@ def get_libros_by_author(autor):
 
         total_libros = cant_libros_carrito + cant_pedidos_realizados
 
+        libros_filtrados = [libro for libro in libros if
+                            libro['titulo'] not in [pedido.libro.titulo for pedido in pedidos_pendientes]]
+
         # Agregar una bandera 'en_carrito' a cada libro para indicar si está en el carrito o no
-        for libro in libros:
+        for libro in libros_filtrados:
             libro['en_carrito'] = any(item['titulo'] == libro['titulo'] for item in carrito)
-        if libros is not None:
-            return render_template("libros_por_autor.html", librosPorAutor=libros, carrito_de_pedidos=carrito,
+        if libros_filtrados is not None:
+            return render_template("libros_por_autor.html", librosPorAutor=libros_filtrados, carrito_de_pedidos=carrito,
                                    cant_pedidos_cliente=total_libros)
     else:
         return render_template('mensaje.html',
@@ -311,12 +316,8 @@ def get_libros_by_genre(genero):
 
         cant_libros_carrito = len(carrito)
 
-        # Obtener la persona actual
-        persona_data = session.get('persona_logueda')
-        persona = Persona.from_dict(persona_data)
-
         # Obtener pedidos realizados por el cliente con estado True
-        pedidos_realizados = PedidoLogic.get_pedidos_by_persona(persona)
+        pedidos_realizados = PedidoLogic.get_pedidos_by_persona(persona_logueada)
 
         cant_pedidos_realizados = 0
 
@@ -625,6 +626,7 @@ def finaliza_devolucion(id):
     if persona_logueada.tipo_persona == 'administrador':
         pedido = PedidoLogic.get_one_pedido(id)
         pedido.estado = False
+        pedido.libro.existencia = True
         PedidoLogic.update_pedido()
         return render_template('mensaje.html',
                                mensaje='Devolución realizada correctamente',
