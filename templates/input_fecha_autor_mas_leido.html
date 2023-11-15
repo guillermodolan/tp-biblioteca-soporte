@@ -26,7 +26,7 @@
         <div>
             <label for="anio">Selecciona un año:</label>
             <select id="anio" name="anio" >
-                {% for year in range(2026, 2010) %}
+                {% for year in range(2027, 2009, -1) %}
                     <option value="{{ year }}">{{ year }}</option>
                 {% endfor %}
             </select>

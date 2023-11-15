@@ -9,6 +9,7 @@ from sqlalchemy.orm.exc import ObjectDeletedError, StaleDataError
 from werkzeug.exceptions import NotFound
 from data.database import Database
 from entity_models.persona_model import Persona
+from entity_models.registro_cliente_form import RegistroClienteForm
 from entity_models.registro_form import RegistroForm
 from entity_models.pedido_form import PedidoForm
 from entity_models.categoria_form import CategoriaForm
@@ -20,7 +21,6 @@ from entity_models.pedido_model import Pedido
 from entity_models.categoria_model import Categoria
 from entity_models.libro_model import Libro
 from entity_models.autor_model import Autor
-from graphics.autores_mas_leidos_en_un_mes import AutorMasLeidoEnUnMesGrafico
 from logic.libro_API_logic import LibroAPILogic
 from logic.libro_autor_logic import LibroAutorLogic
 from logic.pedido_logic import PedidoLogic
@@ -70,7 +70,10 @@ def login():
             session['persona_logueda'] = persona.to_dict()
             return render_template('home.html', persona_logueda=persona)
         else:
-            return render_template('login.html')
+            return render_template('mensaje.html',
+                                   mensaje='Usuario o contraseña incorrecto/s',
+                                   persona_logueada=persona_logueada)
+
     else:
         return render_template('login.html')
 
@@ -205,7 +208,7 @@ def delete_persona(id):
             PersonaLogic.delete_persona(id)
             return render_template('mensaje.html',
                                    mensaje='Persona eliminada correctamente',
-                                   persona_logueda=persona_logueada)
+                                   persona_logueada=persona_logueada)
         except IntegrityError as e:
             raise e
         except ObjectDeletedError as e:
@@ -231,7 +234,7 @@ def add_persona():
                 registro_form.populate_obj(persona)
                 PersonaLogic.add_persona(persona)
                 return render_template('mensaje.html',
-                                       mensaje='Persona insertada correctamente',
+                                       mensaje='Persona agregada correctamente',
                                        persona_logueada=persona_logueada)
             else:
                 return render_template('mensaje.html',
@@ -246,23 +249,25 @@ def add_persona():
                                persona_logueada=persona_logueada)
     else:
         persona = Persona()
-        registro_form = RegistroForm(obj=persona)
+        registro_cliente_form = RegistroClienteForm(obj=persona)
         if request.method == 'POST':
             contraseña = request.form['contraseña']
-            if registro_form.validate_on_submit():
+            if registro_cliente_form.validate_on_submit():
                 Persona.establece_contraseña(persona, contraseña)
-                registro_form.populate_obj(persona)
+                registro_cliente_form.populate_obj(persona)
                 PersonaLogic.add_persona(persona)
                 return render_template('mensaje.html',
-                                       mensaje='Se ha logueado correctamente',
+                                       mensaje='Se ha registrado correctamente',
                                        persona_logueada=persona_logueada)
             else:
                 return render_template('mensaje.html',
                                        mensaje='Error al registrarse',
                                        persona_logueada=persona_logueada)
         else:
+            persona = Persona()
+            registro_cliente_form = RegistroClienteForm(obj=persona)
             return render_template('alta_persona.html',
-                                   persona_agregar=registro_form,
+                                   persona_agregar=registro_cliente_form,
                                    persona_logueada=persona_logueada)
 
 
@@ -603,11 +608,9 @@ def autor_mas_leido():
             mes = request.form.get('mes')
             año = request.form.get('anio')
             resultados = AutorLogic.autor_mas_leido_en_un_mes(mes, año)
-            autores, libros_leidos = zip(*resultados)
+            resultados_dict = [{'autor': autor, 'libros_leidos': libros_leidos} for autor, libros_leidos in resultados]
             return render_template("autores_mas_leidos_en_un_mes.html",
-                                   resultados=resultados,
-                                   autores=autores,
-                                   libros_leidos=libros_leidos)
+                                   resultados_dict=resultados_dict)
     else:
         return render_template('mensaje.html',
                                mensaje='Página no encontrada',
