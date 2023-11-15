@@ -1,41 +1,84 @@
+from flask import Flask
+from sqlalchemy.exc import SQLAlchemyError
+from werkzeug.exceptions import NotFound
+
 from entity_models.libro_model import Libro
 from data.database import Database
+app = Flask(__name__)
 
 
 class DataLibro:
     @classmethod
     def get_all_libros(cls):
-        libros = Libro.query.order_by('id_libro')
-        return libros
+        try:
+            libros = Libro.query.order_by('id_libro')
+            return libros
+        except SQLAlchemyError as e:
+            app.logger.debug(f'Error en la base de datos: {e}')
+            raise e
+        except Exception as e:
+            app.logger.debug(f'Error inesperado: {e}')
+            raise e
 
     @classmethod
     def get_one_libro(cls, id):
-        libro = Libro.query.get_or_404(id)
-        return libro
+        try:
+            libro = Libro.query.get_or_404(id)
+            return libro
+        except SQLAlchemyError as e:
+            app.logger.debug(f'Error en la base de datos: {e}')
+            raise e
+        except NotFound:
+            app.logger.debug(f'Libro no encontrado')
+            raise NotFound(description='Libro no encontrado')
 
     @classmethod
     def add_libro(cls, libro):
-        Database.db.session.add(libro)
-        Database.db.session.commit()
+        try:
+            Database.db.session.add(libro)
+            Database.db.session.commit()
+        except SQLAlchemyError as e:
+            app.logger.debug(f'Error al agregar el libro: {e}')
+            raise e
+        except Exception as e:
+            app.logger.debug(f'Error inesperado: {e}')
+            raise e
 
     @classmethod
     def update_existencia(cls):
-        Database.db.session.commit()
-        return 'Existencia actualizada'
+        try:
+            Database.db.session.commit()
+        except SQLAlchemyError as e:
+            app.logger.debug(f'Error al actualizar la existencia: {e}')
+            raise e
+        except Exception as e:
+            app.logger.debug(f'Error inesperado: {e}')
+            raise e
 
     @classmethod
     def delete_libro(cls, id):
-        libro = DataLibro.get_one_libro(id)
+        try:
+            libro = DataLibro.get_one_libro(id)
+            Database.db.session.delete(libro)
+            Database.db.session.commit()
+        except SQLAlchemyError as e:
+            app.logger.debug(f'Error al eliminar el libro: {e}')
+            raise e
+        except NotFound:
+            app.logger.debug(f'Libro no encontrado')
+            raise NotFound(description='Libro no encontrado')
+        except Exception as e:
+            app.logger.debug(f'Error inesperado: {e}')
+            raise e
 
-        # Elimino al libro
-        Database.db.session.delete(libro)
-
-        # Guardo los cambios en la base de datos
-        Database.db.session.commit()
-
-    # Método que servirá para buscar un libro por título. Esto nos servirá para cuando se confirman
-    # libros a un pedido, que no se creen 2 veces en la base de datos.
     @classmethod
     def get_libro_by_titulo(cls, titulo):
-        libro = Libro.query.filter(Libro.titulo.ilike(f'%{titulo}%')).first()
-        return libro
+        try:
+            libro = Libro.query.filter(Libro.titulo.ilike(f'%{titulo}%')).first()
+            return libro
+        except SQLAlchemyError as e:
+            app.logger.debug(f'Error en la base de datos: {e}')
+            raise e
+        except Exception as e:
+            app.logger.debug(f'Error inesperado: {e}')
+            raise e

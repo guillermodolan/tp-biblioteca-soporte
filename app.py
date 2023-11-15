@@ -87,7 +87,6 @@ def home():
         return redirect(url_for('login'))
 
 
-# Ruta para manejar el cierre de sesión
 @app.route('/logout')
 def logout():
     # Elimino los datos de la sesión de la persona
@@ -118,7 +117,9 @@ def enviar_correo_dos_dias_antes():
 
             # Envía el correo
             mail.send(msg)
-        return render_template('mensaje.html', mensaje='Correos enviados')
+        return render_template('mensaje.html',
+                               mensaje='Correos enviados',
+                               persona_logueada=persona_logueada)
     else:
         return render_template('mensaje.html',
                                mensaje='Página no encontrada',
@@ -220,7 +221,7 @@ def delete_persona(id):
 @app.route('/agregar_persona', methods=['GET', 'POST'])
 def add_persona():
     persona_logueada = obtener_persona_logueada()
-    if persona_logueada.tipo_persona == 'administrador':
+    if persona_logueada is not None and persona_logueada.tipo_persona == 'administrador':
         persona = Persona()
         registro_form = RegistroForm(obj=persona)
         if request.method == 'POST':
@@ -231,13 +232,13 @@ def add_persona():
                 PersonaLogic.add_persona(persona)
                 return render_template('mensaje.html',
                                        mensaje='Persona insertada correctamente',
-                                       persona_logueda=persona_logueada)
+                                       persona_logueada=persona_logueada)
             else:
                 return render_template('mensaje.html',
                                        mensaje='Error al insertar persona',
-                                       persona_logueda=persona_logueada)
+                                       persona_logueada=persona_logueada)
         return render_template('alta_persona.html', persona_agregar=registro_form)
-    else:
+    elif persona_logueada is not None:
         return render_template('mensaje.html',
                                mensaje='Página no encontrada',
                                persona_logueada=persona_logueada)
@@ -248,7 +249,6 @@ def update_persona(id):
     persona_logueada = obtener_persona_logueada()
     if persona_logueada.tipo_persona == 'administrador':
         try:
-            persona_logueada = obtener_persona_logueada()
             persona = PersonaLogic.get_one_persona(id)
             registro_form = RegistroForm(obj=persona)
             if request.method == 'POST':
@@ -257,11 +257,11 @@ def update_persona(id):
                     PersonaLogic.update_persona()
                     return render_template('mensaje.html',
                                            mensaje='Persona actualizada correctamente',
-                                           persona_logueda=persona_logueada)
+                                           persona_logueada=persona_logueada)
                 else:
                     return render_template('mensaje.html',
                                            mensaje='Error al actualizar persona',
-                                           persona_logueda=persona_logueada)
+                                           persona_logueada=persona_logueada)
             return render_template('editar_persona.html', persona_editar=registro_form)
         except NotFound as e:
             raise e
@@ -299,7 +299,9 @@ def get_libros_by_author(autor):
         for libro in libros_filtrados:
             libro['en_carrito'] = any(item['titulo'] == libro['titulo'] for item in carrito)
         if libros_filtrados is not None:
-            return render_template("libros_por_autor.html", librosPorAutor=libros_filtrados, carrito_de_pedidos=carrito,
+            return render_template("libros_por_autor.html",
+                                   librosPorAutor=libros_filtrados,
+                                   carrito_de_pedidos=carrito,
                                    cant_pedidos_cliente=total_libros)
     else:
         return render_template('mensaje.html',
@@ -311,9 +313,10 @@ def get_libros_by_author(autor):
 def get_libros_by_genre(genero):
     persona_logueada = obtener_persona_logueada()
     if persona_logueada.tipo_persona == 'cliente':
+        # Busco los pedidos pendientes del cliente
+        pedidos_pendientes = PedidoLogic.get_pedidos_by_persona_pendientes(persona_logueada)
         libros = LibroAPILogic.get_libros_by_genre(genero)
         carrito = app.config['CARRITO']
-
         cant_libros_carrito = len(carrito)
 
         # Obtener pedidos realizados por el cliente con estado True
@@ -327,11 +330,17 @@ def get_libros_by_genre(genero):
 
         total_libros = cant_libros_carrito + cant_pedidos_realizados
 
+        libros_filtrados = [libro for libro in libros if
+                            libro['titulo'] not in [pedido.libro.titulo for pedido in pedidos_pendientes]]
+
+
         # Agregar una bandera 'en_carrito' a cada libro para indicar si está en el carrito o no
-        for libro in libros:
+        for libro in libros_filtrados:
             libro['en_carrito'] = any(item['titulo'] == libro['titulo'] for item in carrito)
-        if libros is not None:
-            return render_template("libros_por_genero.html", librosPorGenero=libros, carrito_de_pedidos=carrito,
+        if libros_filtrados is not None:
+            return render_template("libros_por_genero.html",
+                                   librosPorGenero=libros_filtrados,
+                                   carrito_de_pedidos=carrito,
                                    cant_pedidos_cliente=total_libros)
     else:
         return render_template('mensaje.html',
@@ -514,14 +523,8 @@ def confirmar_pedido():
                     fecha_actual = datetime.now()
                     # Convertir la fecha a una cadena (string) en un formato específico
                     fecha_actual_str = fecha_actual.strftime('%Y-%m-%d')
-
                     # Agrega 7 días a la fecha actual
-                    # fecha_devolucion = fecha_actual + timedelta(days=7)
-
-                    # LA LÍNEA DE ABAJO ES PARA HACER PRUEBAS PARA PROBAR EL ENVÍO DEL
-                    # CORREO ELECTRÓNICO
-                    fecha_devolucion = fecha_actual + timedelta(days=2)
-
+                    fecha_devolucion = fecha_actual + timedelta(days=7)
                     fecha_devolucion_str = fecha_devolucion.strftime('%Y-%m-%d')
 
                     pedido.fecha_pedido = fecha_actual_str
@@ -561,7 +564,7 @@ def estadisticas():
 @app.route('/input_fecha_autor_mas_leido')
 def input_fecha_autor_mas_leido():
     persona_logueada = obtener_persona_logueada()
-    if persona_logueada.tipo_persona == 'admistrador':
+    if persona_logueada.tipo_persona == 'administrador':
         return render_template('input_fecha_autor_mas_leido.html')
     else:
         return render_template('mensaje.html',
@@ -577,8 +580,12 @@ def autor_mas_leido():
         if request.method == 'POST':
             mes = request.form.get('mes')
             año = request.form.get('anio')
-            AutorMasLeidoEnUnMesGrafico.crea_grafico(mes, año)
-        return render_template('mensaje.html', mensaje='Hecho')
+            resultados = AutorLogic.autor_mas_leido_en_un_mes(mes, año)
+            autores, libros_leidos = zip(*resultados)
+            return render_template("autores_mas_leidos_en_un_mes.html",
+                                   resultados=resultados,
+                                   autores=autores,
+                                   libros_leidos=libros_leidos)
     else:
         return render_template('mensaje.html',
                                mensaje='Página no encontrada',
@@ -590,7 +597,7 @@ def realizar_devolucion():
     persona_logueada = obtener_persona_logueada()
     if persona_logueada.tipo_persona == 'administrador':
         clientes_devolucion = PersonaLogic.get_clientes_con_pedidos_pendientes()
-        if clientes_devolucion is not None:
+        if len(clientes_devolucion) != 0:
             return render_template('clientes_pendientes_devolucion.html',
                                    clientes=clientes_devolucion)
         else:
@@ -608,7 +615,6 @@ def realizar_devolucion():
 def clientes_en_devolucion(id):
     persona_logueada = obtener_persona_logueada()
     if persona_logueada.tipo_persona == 'administrador':
-        # Obtengo al cliente
         cliente = PersonaLogic.get_one_persona(id)
         pedidos_para_devolver = PedidoLogic.get_pedidos_by_persona_pendientes(cliente)
         return render_template('pedidos_para_devolver.html', cliente=cliente,

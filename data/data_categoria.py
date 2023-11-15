@@ -1,40 +1,73 @@
+from flask import Flask
+from sqlalchemy.exc import SQLAlchemyError
+from werkzeug.exceptions import NotFound
+
 from entity_models.categoria_model import Categoria
 from data.database import Database
+app = Flask(__name__)
 
 
-# get_all
-# get_one
-# add
-# delete
-
-
-class DataCategoria():
+class DataCategoria:
     @classmethod
     def get_all_categorias(cls):
-        categoria = Categoria.query.order_by('id_categoria')
-        return categoria
+        try:
+            categorias = Categoria.query.order_by('id_categoria')
+            return categorias
+        except SQLAlchemyError as e:
+            app.logger.debug(f'Error en la base de datos: {e}')
+            raise e
+        except Exception as e:
+            app.logger.debug(f'Error inesperado: {e}')
+            raise e
 
     @classmethod
     def get_one_categoria(cls, id):
-        categoria = Categoria.query.get_or_404(id)
-        return categoria
+        try:
+            categoria = Categoria.query.get_or_404(id)
+            return categoria
+        except SQLAlchemyError as e:
+            app.logger.debug(f'Error en la base de datos: {e}')
+            raise e
+        except NotFound:
+            app.logger.debug(f'Categoría no encontrada')
+            raise NotFound(description='Categoría no encontrada')
 
     @classmethod
     def get_categoria_by_desc(cls, descripcion):
-        categoria = Categoria.query.filter_by(descripcion=descripcion).first()
-        return categoria
+        try:
+            categoria = Categoria.query.filter_by(descripcion=descripcion).first()
+            return categoria
+        except SQLAlchemyError as e:
+            app.logger.debug(f'Error en la base de datos: {e}')
+            raise e
+        except Exception as e:
+            app.logger.debug(f'Error inesperado: {e}')
+            raise e
 
     @classmethod
     def add_categoria(cls, categoria):
-        Database.db.session.add(categoria)
-        Database.db.session.commit()
+        try:
+            Database.db.session.add(categoria)
+            Database.db.session.commit()
+        except SQLAlchemyError as e:
+            app.logger.debug(f'Error al agregar la categoría: {e}')
+            raise e
+        except Exception as e:
+            app.logger.debug(f'Error inesperado: {e}')
+            raise e
 
     @classmethod
     def delete_categoria(cls, id):
-        categoria = DataCategoria.get_one_categoria(id)
-
-        # Elimino a la categoría
-        Database.db.session.delete(categoria)
-
-        # Guardo los cambios en la base de datos
-        Database.db.session.commit()
+        try:
+            categoria = DataCategoria.get_one_categoria(id)
+            Database.db.session.delete(categoria)
+            Database.db.session.commit()
+        except SQLAlchemyError as e:
+            app.logger.debug(f'Error al eliminar la categoría: {e}')
+            raise e
+        except NotFound:
+            app.logger.debug(f'Categoría no encontrada')
+            raise NotFound(description='Categoría no encontrada')
+        except Exception as e:
+            app.logger.debug(f'Error inesperado: {e}')
+            raise e

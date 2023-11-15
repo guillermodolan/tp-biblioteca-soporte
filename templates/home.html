@@ -16,7 +16,7 @@
     <a href="{{ url_for('realizar_devolucion') }}">Realizar una devolución</a>
     <a href="{{ url_for('get_all_clientes') }}">Listado de clientes</a>
     <a href="{{ url_for('estadisticas') }}">Mostrar estadísticas</a>
-    <a href="">Enviar emails de recordatorios</a>
+    <a href="{{ url_for('enviar_correo_dos_dias_antes') }}">Enviar emails de recordatorios</a>
 {% endif %}
 <a href="{{url_for('logout')}}">Cerrar sesión</a>
 </body>
