@@ -484,10 +484,10 @@ def confirmar_pedido():
     persona_logueada = obtener_persona_logueada()
     if persona_logueada.tipo_persona == 'cliente':
         if request.method == 'POST':
-            libro_autor = LibroAutor()
             carrito = app.config['CARRITO']
             for elem in carrito:
                 # PARTE DE VALIDACIÓN
+                libro_autor = LibroAutor()
                 libro = Libro()
                 categoria_buscada = CategoriaLogic.get_categoria_by_desc(str(elem['categoria']).strip("[]'"))
                 if categoria_buscada is None:
