@@ -9,11 +9,13 @@
     <h1>Autores más leídos en un mes</h1>
     <div id="lineplot"></div>
     <py-script output="lineplot">
+        await pyodide.loadPackage("matplotlib")
+        import matplotlib.pyplot as plt
         plt.bar(autores, libros_leidos)
         plt.xlabel('Autores')
         plt.ylabel('Libros Leídos')
         plt.title(f'Autores Más Leídos en {mes}/{año}')
-        plt.xticks(rotation=0)  # Rota los nombres de los autores para facilitar la lectura
+        plt.xticks(rotation=0)
         plt.tight_layout()
     </py-script>
 </body>

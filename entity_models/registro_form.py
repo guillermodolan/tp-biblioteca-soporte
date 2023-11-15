@@ -9,6 +9,10 @@ class RegistroForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired()])
     nombre_usuario = StringField('Nombre de usuario', validators=[DataRequired()])
     contraseña = PasswordField('Contraseña', validators=[DataRequired()])
-    tipo_persona = SelectField('Tipo de Usuario', choices=[('cliente', 'Cliente'), ('administrador', 'Administrador')], validators=[DataRequired()])
+    tipo_persona = SelectField('Tipo de Usuario',
+                               choices=[('cliente', 'Cliente'), ('administrador', 'Administrador')],
+                               validators=[DataRequired()],
+                               default='cliente'
+    )
     telefono = StringField('Teléfono', validators=[DataRequired()])
     guardar = SubmitField('Guardar')

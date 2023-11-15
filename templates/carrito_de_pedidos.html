@@ -1,6 +1,3 @@
-<!-- PÁGINA DONDE PODRÁ VERSE LOS PEDIDOS QUE TIENE EL CLIENTE EN SU CARRITO -->
-
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -20,13 +17,13 @@
                 <strong>Título:</strong> {{ libro.titulo }}<br>
                 <strong>Autor(es):</strong> {{ libro.autores|join(', ') }}<br>
                 <strong>Categoría:</strong> {{ libro.categoria }}<br>
-                <a href="{{ url_for('eliminar_libro_carrito', titulo=libro.titulo) }}" class="btn btn-danger">Eliminar</a>
+                <a href="#" class="btn btn-danger delete-book" data-titulo="{{ libro.titulo }}">Eliminar</a>
             </li>
         {% endfor %}
     </ul>
 
-    <form action="/confirmar_pedido" method="post">
-        <button type="submit" {% if cant_libros_totales >  3 or carrito_de_pedidos|length == 0 %}disabled{% endif %}>Confirmar Pedido</button>
+    <form id="confirmarPedidoForm" action="/confirmar_pedido" method="post">
+        <button type="button" id="confirmarPedidoBtn" {% if cant_libros_totales > 3 or carrito_de_pedidos|length == 0 %}disabled{% endif %}>Confirmar Pedido</button>
     </form>
 
     {% if cant_libros_totales < 3 %}
@@ -36,4 +33,35 @@
     {% endif %}
     <a href="{{url_for('home')}}">Volver al inicio</a>
 </body>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var deleteButtons = document.querySelectorAll('.delete-book');
+
+        deleteButtons.forEach(function (button) {
+            button.addEventListener('click', function (event) {
+                event.preventDefault();
+
+                var titulo = button.getAttribute('data-titulo');
+                var confirmation = confirm('¿Estás seguro de que deseas eliminar el libro ' + titulo + ' del carrito?');
+
+                if (confirmation) {
+                    // Si el usuario confirma, redirige al enlace original de eliminación
+                    window.location.href = "{{ url_for('eliminar_libro_carrito', titulo='') }}" + titulo;
+                }
+            });
+        });
+    });
+    document.addEventListener('DOMContentLoaded', function () {
+        var confirmarPedidoBtn = document.getElementById('confirmarPedidoBtn');
+
+        confirmarPedidoBtn.addEventListener('click', function () {
+            var confirmation = confirm('¿Estás seguro de que deseas confirmar el pedido?');
+
+            if (confirmation) {
+                // Si el usuario confirma, envía el formulario
+                document.getElementById('confirmarPedidoForm').submit();
+            }
+        });
+    });
+</script>
 </html>

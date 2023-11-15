@@ -237,11 +237,33 @@ def add_persona():
                 return render_template('mensaje.html',
                                        mensaje='Error al insertar persona',
                                        persona_logueada=persona_logueada)
-        return render_template('alta_persona.html', persona_agregar=registro_form)
+        return render_template('alta_persona.html',
+                               persona_agregar=registro_form,
+                               persona_logueada=persona_logueada)
     elif persona_logueada is not None:
         return render_template('mensaje.html',
                                mensaje='Página no encontrada',
                                persona_logueada=persona_logueada)
+    else:
+        persona = Persona()
+        registro_form = RegistroForm(obj=persona)
+        if request.method == 'POST':
+            contraseña = request.form['contraseña']
+            if registro_form.validate_on_submit():
+                Persona.establece_contraseña(persona, contraseña)
+                registro_form.populate_obj(persona)
+                PersonaLogic.add_persona(persona)
+                return render_template('mensaje.html',
+                                       mensaje='Se ha logueado correctamente',
+                                       persona_logueada=persona_logueada)
+            else:
+                return render_template('mensaje.html',
+                                       mensaje='Error al registrarse',
+                                       persona_logueada=persona_logueada)
+        else:
+            return render_template('alta_persona.html',
+                                   persona_agregar=registro_form,
+                                   persona_logueada=persona_logueada)
 
 
 @app.route('/editar_persona/<int:id>', methods=['GET', 'POST'])
