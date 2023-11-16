@@ -13,6 +13,6 @@ class RegistroForm(FlaskForm):
                                choices=[('cliente', 'Cliente'), ('administrador', 'Administrador')],
                                validators=[DataRequired()],
                                default='cliente'
-    )
+                               )
     telefono = StringField('Teléfono', validators=[DataRequired()])
     guardar = SubmitField('Guardar')

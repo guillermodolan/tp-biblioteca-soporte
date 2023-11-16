@@ -28,10 +28,15 @@
     {{ persona_agregar.contraseña.label }} <br/>
     {{ persona_agregar.contraseña(size=70, type="password") }}
   </p>
-  {% if persona_logueada != None %}
+  {% if persona_logueada == None %}
     <p>
-      {{ persona_agregar.tipo_persona.label }} <br/>
-      {{ persona_agregar.tipo_persona }}
+        {{ persona_agregar.tipo_persona.label }} <br/>
+        {{ persona_agregar.tipo_persona(disabled='disabled') }}
+    </p>
+  {% else %}
+    <p>
+        {{ persona_agregar.tipo_persona.label }} <br/>
+        {{ persona_agregar.tipo_persona }}
     </p>
   {% endif %}
   <p>
