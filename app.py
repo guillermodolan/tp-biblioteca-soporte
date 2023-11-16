@@ -238,7 +238,7 @@ def add_persona():
                                        persona_logueada=persona_logueada)
             else:
                 return render_template('mensaje.html',
-                                       mensaje='Error al insertar persona',
+                                       mensaje='Error al agregar persona',
                                        persona_logueada=persona_logueada)
         return render_template('alta_persona.html',
                                persona_agregar=registro_form,

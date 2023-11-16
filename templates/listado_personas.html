@@ -31,7 +31,7 @@
                     <td>{{per.nombre_usuario}}</td>
                     <td>{{per.telefono}}</td>
                     <td><a href="{{url_for('update_persona', id=per.id)}}">Editar</a></td>
-                    <td><a href="{{url_for('delete_persona', id=per.id)}}">Eliminar</a></td>
+                    <td><a href="#" class="btn btn-danger delete-person" data-nombre="{{ per.nombre }} " data-apellido="{{ per.apellido }}" data-id="{{ per.id }}">Eliminar</a></td>
                 </tr>
             {% endfor %}
         </tbody>
@@ -41,4 +41,25 @@
 <a href="{{url_for('home')}}">Volver</a>
 
 </body>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var deleteButtons = document.querySelectorAll('.delete-person');
+
+        deleteButtons.forEach(function (button) {
+            button.addEventListener('click', function (event) {
+                event.preventDefault();
+
+                var nombre = button.getAttribute('data-nombre');
+                var apellido = button.getAttribute('data-apellido');
+                var id = button.getAttribute('data-id');
+                var confirmation = confirm('¿Estás seguro de que deseas eliminar la persona ' + nombre + ' ' + apellido + ' del sistema?');
+
+                if (confirmation) {
+                    // Si el usuario confirma, redirige al enlace original de eliminación
+                    window.location.href = "{{url_for('delete_persona', id=0)}}" + id;
+                }
+            });
+        });
+    });
+</script>
 </html>
