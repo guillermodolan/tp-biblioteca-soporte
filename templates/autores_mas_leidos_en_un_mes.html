@@ -4,19 +4,32 @@
     <title>Gráfico</title>
     <link rel="stylesheet" href="https://pyscript.net/releases/2023.11.1/core.css" />
     <script type="module" src="https://pyscript.net/releases/2023.11.1/core.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
     <h1>Autores más leídos en un mes</h1>
     <div id="lineplot"></div>
-    <py-script output="lineplot">
-        await pyodide.loadPackage("matplotlib")
-        import matplotlib.pyplot as plt
-        plt.bar(autores, libros_leidos)
-        plt.xlabel('Autores')
-        plt.ylabel('Libros Leídos')
-        plt.title(f'Autores Más Leídos en {mes}/{año}')
-        plt.xticks(rotation=0)
-        plt.tight_layout()
-    </py-script>
+    <script>
+        var resultados_dict = {{ resultados_dict | tojson | safe }};
+        var autores = resultados_dict.map(item => item.autor);
+        var libros_leidos = resultados_dict.map(item => item.libros_leidos);
+
+        // Crear el gráfico con Plotly
+        var data = [{
+            x: autores,
+            y: libros_leidos,
+            type: 'bar',
+        }];
+
+        Plotly.newPlot('lineplot', data, {
+            title: `Autores Más Leídos`,
+            xaxis: {
+                title: 'Autores',
+            },
+            yaxis: {
+                title: 'Libros Leídos',
+            },
+        });
+    </script>
 </body>
 </html>

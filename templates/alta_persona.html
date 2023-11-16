@@ -30,13 +30,13 @@
   </p>
   {% if persona_logueada == None %}
     <p>
-        {{ persona_agregar.tipo_persona.label }} <br/>
-        {{ persona_agregar.tipo_persona(disabled='disabled') }}
+      {{ persona_agregar.tipo_persona.label }} <br/>
+      {{ persona_agregar.tipo_persona }}
     </p>
   {% else %}
     <p>
-        {{ persona_agregar.tipo_persona.label }} <br/>
-        {{ persona_agregar.tipo_persona }}
+      {{ persona_agregar.tipo_persona.label }} <br/>
+      {{ persona_agregar.tipo_persona }}
     </p>
   {% endif %}
   <p>
