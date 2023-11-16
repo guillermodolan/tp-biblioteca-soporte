@@ -24,7 +24,18 @@ class LibroAPILogic:
                         # Obtener solo el primer código ISBN si hay al menos uno
                         primer_isbn = isbn_list[0] if isbn_list else "ISBN no disponible"
 
-                        primer_categoria = categoria_list[0] if categoria_list else "Categoría no disponible"
+                        primer_categoria = "Categoría no disponible"
+
+                        if categoria_list is not ["Categoría no disponible"]:
+                            for cat in categoria_list:
+                                primer_categoria = cat
+                                for letra in cat:
+                                    if letra == ' ':
+                                        break
+                                else:
+                                    break
+                            else:
+                                primer_categoria = "Categoría no disponible"
 
                         libros.append({"titulo": titulo, "autores": autores,
                                        "categoria": primer_categoria, "isbn": primer_isbn})
