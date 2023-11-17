@@ -1,7 +1,7 @@
 import ast
 from datetime import datetime, timedelta
 
-from flask import Flask, render_template, url_for, redirect, request, session
+from flask import Flask, render_template, url_for, redirect, request, session, jsonify
 from flask_mail import Message, Mail
 from flask_migrate import Migrate
 from sqlalchemy.exc import IntegrityError
@@ -135,7 +135,7 @@ def get_all_personas():
     if persona_logueada.tipo_persona == 'administrador':
         personas = PersonaLogic.get_all_personas()
         return render_template('listado_personas.html', personas_param=personas,
-                               titulo = 'Personas')
+                               titulo='Personas')
     else:
         return render_template('mensaje.html',
                                mensaje='Página no encontrada',
@@ -148,7 +148,7 @@ def get_all_clientes():
     if persona_logueada.tipo_persona == 'administrador':
         clientes = PersonaLogic.get_all_clientes()
         return render_template('listado_personas.html', personas_param=clientes,
-                               titulo = 'Clientes')
+                               titulo='Clientes')
     else:
         return render_template('mensaje.html',
                                mensaje='Página no encontrada',
@@ -229,13 +229,20 @@ def add_persona():
         registro_form = RegistroForm(obj=persona)
         if request.method == 'POST':
             contraseña = request.form['contraseña']
+            nombre_usuario = request.form['nombre_usuario']
+
             if registro_form.validate_on_submit():
-                Persona.establece_contraseña(persona, contraseña)
-                registro_form.populate_obj(persona)
-                PersonaLogic.add_persona(persona)
-                return render_template('mensaje.html',
-                                       mensaje='Persona agregada correctamente',
-                                       persona_logueada=persona_logueada)
+                if PersonaLogic.get_persona_by_user(nombre_usuario):
+                    return render_template('mensaje.html',
+                                           mensaje='Error: Nombre de usuario ya existente',
+                                           persona_logueada=persona_logueada)
+                else:
+                    Persona.establece_contraseña(persona, contraseña)
+                    registro_form.populate_obj(persona)
+                    PersonaLogic.add_persona(persona)
+                    return render_template('mensaje.html',
+                                           mensaje='Persona agregada correctamente',
+                                           persona_logueada=persona_logueada)
             else:
                 return render_template('mensaje.html',
                                        mensaje='Error al agregar persona',
@@ -252,13 +259,19 @@ def add_persona():
         registro_cliente_form = RegistroClienteForm(obj=persona)
         if request.method == 'POST':
             contraseña = request.form['contraseña']
+            nombre_usuario = request.form['nombre_usuario']
             if registro_cliente_form.validate_on_submit():
-                Persona.establece_contraseña(persona, contraseña)
-                registro_cliente_form.populate_obj(persona)
-                PersonaLogic.add_persona(persona)
-                return render_template('mensaje.html',
-                                       mensaje='Se ha registrado correctamente',
-                                       persona_logueada=persona_logueada)
+                if PersonaLogic.get_persona_by_user(nombre_usuario):
+                    return render_template('mensaje.html',
+                                           mensaje='Error: Nombre de usuario ya existente',
+                                           persona_logueada=persona_logueada)
+                else:
+                    Persona.establece_contraseña(persona, contraseña)
+                    registro_cliente_form.populate_obj(persona)
+                    PersonaLogic.add_persona(persona)
+                    return render_template('mensaje.html',
+                                           mensaje='Se ha registrado correctamente',
+                                           persona_logueada=persona_logueada)
             else:
                 return render_template('mensaje.html',
                                        mensaje='Error al registrarse',
@@ -269,6 +282,16 @@ def add_persona():
             return render_template('alta_persona.html',
                                    persona_agregar=registro_cliente_form,
                                    persona_logueada=persona_logueada)
+
+
+@app.route('/validar_nombre_usuario', methods=['POST'])
+def validar_nombre_usuario():
+    nombre_usuario = request.form.get('nombre_usuario')
+    if PersonaLogic.get_persona_by_user(nombre_usuario) != None:
+        existe = True
+    else:
+        existe = False
+    return jsonify({'existe': existe})
 
 
 @app.route('/editar_persona/<int:id>', methods=['GET', 'POST'])
@@ -302,8 +325,9 @@ def update_persona(id):
 def get_libros_by_author(autor):
     persona_logueada = obtener_persona_logueada()
     if persona_logueada.tipo_persona == 'cliente':
-        # Busco los pedidos pendientes del cliente
-        pedidos_pendientes = PedidoLogic.get_pedidos_by_persona_pendientes(persona_logueada)
+        # Busco los pedidos activos, para obtener de los mismos los libros que se encuentran
+        # alquilados
+        pedidos_pendientes = PedidoLogic.get_pedidos_activos()
         libros = LibroAPILogic.get_libros_by_author(autor)
         carrito = app.config['CARRITO']
         cant_libros_carrito = len(carrito)
@@ -340,8 +364,9 @@ def get_libros_by_author(autor):
 def get_libros_by_genre(genero):
     persona_logueada = obtener_persona_logueada()
     if persona_logueada.tipo_persona == 'cliente':
-        # Busco los pedidos pendientes del cliente
-        pedidos_pendientes = PedidoLogic.get_pedidos_by_persona_pendientes(persona_logueada)
+        # Busco los pedidos activos, para obtener de los mismos los libros que se encuentran
+        # alquilados
+        pedidos_pendientes = PedidoLogic.get_pedidos_activos()
         libros = LibroAPILogic.get_libros_by_genre(genero)
         carrito = app.config['CARRITO']
         cant_libros_carrito = len(carrito)
@@ -359,7 +384,6 @@ def get_libros_by_genre(genero):
 
         libros_filtrados = [libro for libro in libros if
                             libro['titulo'] not in [pedido.libro.titulo for pedido in pedidos_pendientes]]
-
 
         # Agregar una bandera 'en_carrito' a cada libro para indicar si está en el carrito o no
         for libro in libros_filtrados:
@@ -463,25 +487,27 @@ def eliminar_libro_carrito(titulo):
 
 @app.route('/carrito')
 def mostrar_carrito():
-    carrito = app.config['CARRITO']
-    cant_libros_carrito = len(carrito)
+    persona_logueada = obtener_persona_logueada()
+    if persona_logueada.tipo_persona == 'cliente':
+        carrito = app.config['CARRITO']
+        cant_libros_carrito = len(carrito)
 
-    # Obtener el cliente actual
-    persona_data = session.get('persona_logueda')
-    persona = Persona.from_dict(persona_data)
+        # Obtener pedidos realizados por el cliente con estado True
+        pedidos_realizados = PedidoLogic.get_pedidos_by_persona(persona_logueada)
 
-    # Obtener pedidos realizados por el cliente con estado True
-    pedidos_realizados = PedidoLogic.get_pedidos_by_persona(persona)
+        cant_pedidos_realizados = 0
 
-    cant_pedidos_realizados = 0
+        for ped in pedidos_realizados:
+            if ped.estado:
+                cant_pedidos_realizados = cant_pedidos_realizados + 1
 
-    for ped in pedidos_realizados:
-        if ped.estado:
-            cant_pedidos_realizados = cant_pedidos_realizados + 1
+        total_libros = cant_libros_carrito + cant_pedidos_realizados
 
-    total_libros = cant_libros_carrito + cant_pedidos_realizados
-
-    return render_template('carrito_de_pedidos.html', carrito_de_pedidos=carrito, cant_libros_totales=total_libros)
+        return render_template('carrito_de_pedidos.html', carrito_de_pedidos=carrito, cant_libros_totales=total_libros)
+    else:
+        return render_template('mensaje.html',
+                               mensaje='Página no encontrada',
+                               persona_logueada=persona_logueada)
 
 
 @app.route('/confirmar_pedido', methods=['POST'])
@@ -599,7 +625,6 @@ def input_fecha_autor_mas_leido():
                                persona_logueada=persona_logueada)
 
 
-
 @app.route('/autor_mas_leido', methods=['POST'])
 def autor_mas_leido():
     persona_logueada = obtener_persona_logueada()
@@ -608,9 +633,16 @@ def autor_mas_leido():
             mes = request.form.get('mes')
             año = request.form.get('anio')
             resultados = AutorLogic.autor_mas_leido_en_un_mes(mes, año)
-            resultados_dict = [{'autor': autor, 'libros_leidos': libros_leidos} for autor, libros_leidos in resultados]
-            return render_template("autores_mas_leidos_en_un_mes.html",
-                                   resultados_dict=resultados_dict)
+            if resultados == None:
+                resultados_dict = [{'autor': autor, 'libros_leidos': libros_leidos} for autor,
+                libros_leidos in resultados]
+
+                return render_template("autores_mas_leidos_en_un_mes.html",
+                                       resultados_dict=resultados_dict)
+            else:
+                return render_template('mensaje.html',
+                                       mensaje='No se encontraron autores para el período ingresado',
+                                       persona_logueada=persona_logueada)
     else:
         return render_template('mensaje.html',
                                mensaje='Página no encontrada',
@@ -635,7 +667,6 @@ def realizar_devolucion():
                                persona_logueada=persona_logueada)
 
 
-
 @app.route('/clientes_en_devolucion/<int:id>')
 def clientes_en_devolucion(id):
     persona_logueada = obtener_persona_logueada()
@@ -648,7 +679,6 @@ def clientes_en_devolucion(id):
         return render_template('mensaje.html',
                                mensaje='Página no encontrada',
                                persona_logueada=persona_logueada)
-
 
 
 @app.route('/finaliza_devolucion/<int:id>')
@@ -666,7 +696,6 @@ def finaliza_devolucion(id):
         return render_template('mensaje.html',
                                mensaje='Página no encontrada',
                                persona_logueada=persona_logueada)
-
 
 
 def obtener_persona_logueada():

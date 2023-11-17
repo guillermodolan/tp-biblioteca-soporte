@@ -20,6 +20,15 @@ class DataPedido():
             raise e
 
     @classmethod
+    def get_pedidos_activos(cls):
+        try:
+            pedidos_activos = Pedido.query.filter_by(estado=True).order_by('numero_pedido')
+            return pedidos_activos
+        except SQLAlchemyError as e:
+            app.logger.debug(f'Error al obtener los pedidos activos: {e}')
+            raise e
+
+    @classmethod
     def get_one_pedido(cls, id):
         try:
             pedido = Pedido.query.get_or_404(id)

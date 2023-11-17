@@ -8,6 +8,11 @@ class PedidoLogic:
         return pedidos
 
     @classmethod
+    def get_pedidos_activos(cls):
+        pedidos_activos = DataPedido.get_pedidos_activos()
+        return pedidos_activos
+
+    @classmethod
     def get_one_pedido(cls, id):
         pedido = DataPedido.get_one_pedido(id)
         return pedido

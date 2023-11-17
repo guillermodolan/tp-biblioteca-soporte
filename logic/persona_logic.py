@@ -62,11 +62,8 @@ class PersonaLogic:
 
     @classmethod
     def add_persona(cls, persona):
-        global mensaje
         try:
             DataPersona.add_persona(persona)
-            mensaje = f'Persona {persona.nombre} {persona.apellido} insertada exitosamente'
-            # return mensaje
         except sqlalchemy.exc.SQLAlchemyError as e:
             app.logger.debug(f'Error en la base de datos: {e}')
             raise e
@@ -78,7 +75,10 @@ class PersonaLogic:
     def get_persona_by_user(cls, username):
         try:
             persona = DataPersona.get_persona_by_user(username)
-            return persona
+            if persona != None:
+                return persona
+            else:
+                return None
         except sqlalchemy.exc.SQLAlchemyError as e:
             app.logger.debug(f"Error de base de datos: {e}")
             raise e

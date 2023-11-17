@@ -28,4 +28,7 @@ class AutorLogic:
     @classmethod
     def autor_mas_leido_en_un_mes(cls, mes, año):
         resultados = DataAutor.autor_mas_leido_en_un_mes(mes, año)
-        return resultados
+        if resultados != None:
+            return resultados
+        else:
+            return None

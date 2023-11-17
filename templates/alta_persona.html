@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Alta de persona</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 </head>
 <body>
 <h1>Alta de persona</h1>
@@ -22,7 +23,8 @@
   </p>
   <p>
     {{ persona_agregar.nombre_usuario.label }} <br/>
-    {{ persona_agregar.nombre_usuario(size=70) }}
+    {{ persona_agregar.nombre_usuario(size=70, id='nombre_usuario') }}
+    <span id="mensaje_nombre_usuario" style="color: red;"></span>
   </p>
   <p>
     {{ persona_agregar.contraseña.label }} <br/>
@@ -42,4 +44,39 @@
   </p>
 </form>
 </body>
+<script>
+var typingTimer;
+var doneTypingInterval = 500;  // Intervalo en milisegundos (0.5 segundos)
+
+$(document).ready(function () {
+    // Manejar el evento de cambio en el campo nombre_usuario
+    $('#nombre_usuario').on('input', function () {
+        clearTimeout(typingTimer);
+        typingTimer = setTimeout(doneTyping, doneTypingInterval);
+    });
+
+    // Manejar el evento de teclado para reiniciar el temporizador
+    $('#nombre_usuario').on('keydown', function () {
+        clearTimeout(typingTimer);
+    });
+
+    function doneTyping() {
+        var nombreUsuario = $('#nombre_usuario').val();
+
+        // Realizar la solicitud AJAX al servidor
+        $.ajax({
+            type: 'POST',
+            url: '/validar_nombre_usuario',
+            data: {nombre_usuario: nombreUsuario},
+            success: function (response) {
+                if (response.existe) {
+                    $('#mensaje_nombre_usuario').text('Nombre de usuario ya existente');
+                } else {
+                    $('#mensaje_nombre_usuario').text('');
+                }
+            }
+        });
+    }
+});
+</script>
 </html>
