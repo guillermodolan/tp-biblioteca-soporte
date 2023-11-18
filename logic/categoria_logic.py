@@ -24,3 +24,8 @@ class CategoriaLogic:
     @classmethod
     def delete_categoria(cls, id):
         DataCategoria.delete_categoria(id)
+
+    @classmethod
+    def categorias_mas_leidas_en_un_mes(cls, mes, año):
+        resultados = DataCategoria.categorias_mas_leidas_en_un_mes(mes, año)
+        return resultados

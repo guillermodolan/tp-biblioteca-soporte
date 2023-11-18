@@ -1,4 +1,5 @@
 import ast
+import random
 from datetime import datetime, timedelta
 
 from flask import Flask, render_template, url_for, redirect, request, session, jsonify
@@ -346,6 +347,22 @@ def get_libros_by_author(autor):
         libros_filtrados = [libro for libro in libros if
                             libro['titulo'] not in [pedido.libro.titulo for pedido in pedidos_pendientes]]
 
+        libros_seleccionados = random.sample(libros_filtrados, 5)
+        print(f'Cantidad seleccionada: {len(libros_seleccionados)}')
+
+        # Guardo a los libros en la sesión. Me servirán más adelante para
+        # enviar recomendaciones por email al cliente
+        diccionario_libros = {
+            libro['titulo']: {
+                'titulo': libro['titulo'],
+                'autores': libro['autores'],
+                'categoria': libro['categoria'],
+                'isbn': libro['isbn']
+            } for libro in libros_seleccionados
+        }
+
+        session['diccionario_libros'] = diccionario_libros
+
         # Agregar una bandera 'en_carrito' a cada libro para indicar si está en el carrito o no
         for libro in libros_filtrados:
             libro['en_carrito'] = any(item['titulo'] == libro['titulo'] for item in carrito)
@@ -587,7 +604,13 @@ def confirmar_pedido():
                     persona_data = session.get('persona_logueda')
                     persona_id = persona_data.get('id')
                     pedido.id_persona = persona_id
+                    diccionario_libros = session.get('diccionario_libros')
+                    lista_libros_a_enviar = list(diccionario_libros.items())
                     PedidoLogic.add_pedido(pedido)
+
+                    if len(lista_libros_a_enviar) != 0:
+                        envia_recomendaciones(lista_libros_a_enviar)
+
                     # Elimino el carrito
                     app.config['CARRITO'] = []
             return render_template('mensaje.html',
@@ -633,7 +656,7 @@ def autor_mas_leido():
             mes = request.form.get('mes')
             año = request.form.get('anio')
             resultados = AutorLogic.autor_mas_leido_en_un_mes(mes, año)
-            if resultados == None:
+            if len(resultados) != 0:
                 resultados_dict = [{'autor': autor, 'libros_leidos': libros_leidos} for autor,
                 libros_leidos in resultados]
 
@@ -642,6 +665,42 @@ def autor_mas_leido():
             else:
                 return render_template('mensaje.html',
                                        mensaje='No se encontraron autores para el período ingresado',
+                                       persona_logueada=persona_logueada)
+    else:
+        return render_template('mensaje.html',
+                               mensaje='Página no encontrada',
+                               persona_logueada=persona_logueada)
+
+
+@app.route('/input_categoria_mas_leida')
+def input_fecha_categoria_mas_leida():
+    persona_logueada = obtener_persona_logueada()
+    if persona_logueada.tipo_persona == 'administrador':
+        return render_template('input_categoria_mas_leida.html')
+    else:
+        return render_template('mensaje.html',
+                               mensaje='Página no encontrada',
+                               persona_logueada=persona_logueada)
+
+
+@app.route('/categoria_mas_leida', methods=['POST'])
+def categoria_mas_leida():
+    persona_logueada = obtener_persona_logueada()
+    if persona_logueada.tipo_persona == 'administrador':
+        if request.method == 'POST':
+            mes = request.form.get('mes')
+            año = request.form.get('anio')
+            resultados = CategoriaLogic.categorias_mas_leidas_en_un_mes(mes, año)
+            if len(resultados) != 0:
+                resultados_dict = [{'categoria': cat, 'cantidad': cant} for cat,
+                cant in resultados]
+
+                return render_template("categorias_mas_leidas_en_un_mes.html",
+                                       resultados_dict=resultados_dict)
+            else:
+                return render_template('mensaje.html',
+                                       mensaje='No se encontraron categorías leídas '
+                                               'para el período ingresado',
                                        persona_logueada=persona_logueada)
     else:
         return render_template('mensaje.html',
@@ -704,3 +763,20 @@ def obtener_persona_logueada():
     if persona_data:
         persona_logueda = Persona.from_dict(persona_data)
         return persona_logueda
+
+
+def envia_recomendaciones(recomendaciones_de_lectura):
+    persona_logueada = obtener_persona_logueada()
+    asunto = 'Recomendaciones para leer'
+    mensaje = f'Aquí te enviamos algunas recomendaciones en base al autor que elegiste:\n\n'
+
+    for i, (titulo, libro_info) in enumerate(recomendaciones_de_lectura, start=1):
+        mensaje += f'Título: {libro_info["titulo"]}\n'
+        mensaje += f'Autor: {", ".join(libro_info["autores"])}\n'
+        mensaje += f'Categoría: {libro_info["categoria"]}\n'
+        mensaje += '\n'
+
+    msg = Message(asunto, recipients=[persona_logueada.email])
+    msg.body = mensaje
+    mail.send(msg)
+    print('Se envió el email')

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gráfico</title>
+    <link rel="stylesheet" href="https://pyscript.net/releases/2023.11.1/core.css" />
+    <script type="module" src="https://pyscript.net/releases/2023.11.1/core.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <h1>Categorías más leídas en un mes</h1>
+    <div id="lineplot"></div>
+    <script>
+        var resultados_dict = {{ resultados_dict | tojson | safe }};
+        var categoria = resultados_dict.map(item => item.categoria);
+        var cantidad = resultados_dict.map(item => item.cantidad);
+
+        // Crear el gráfico con Plotly
+        var data = [{
+            x: categoria,
+            y: cantidad,
+            type: 'bar',
+        }];
+
+        Plotly.newPlot('lineplot', data, {
+            title: `Categorías Más Leídas`,
+            xaxis: {
+                title: 'Categorías',
+            },
+            yaxis: {
+                title: 'Leídas',
+            },
+        });
+    </script>
+<br><br><a href="{{url_for('home')}}">Volver al inicio</a>
+</body>
+</html>
