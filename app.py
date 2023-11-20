@@ -641,7 +641,9 @@ def estadisticas():
 def input_fecha_autor_mas_leido():
     persona_logueada = obtener_persona_logueada()
     if persona_logueada.tipo_persona == 'administrador':
-        return render_template('input_fecha_autor_mas_leido.html')
+        fecha_actual = datetime.now()
+        return render_template('input_fecha_autor_mas_leido.html',
+                               fecha_actual=fecha_actual)
     else:
         return render_template('mensaje.html',
                                mensaje='Página no encontrada',
@@ -676,7 +678,9 @@ def autor_mas_leido():
 def input_fecha_categoria_mas_leida():
     persona_logueada = obtener_persona_logueada()
     if persona_logueada.tipo_persona == 'administrador':
-        return render_template('input_categoria_mas_leida.html')
+        fecha_actual = datetime.now()
+        return render_template('input_categoria_mas_leida.html',
+                               fecha_actual=fecha_actual)
     else:
         return render_template('mensaje.html',
                                mensaje='Página no encontrada',
