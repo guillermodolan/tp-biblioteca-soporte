@@ -11,6 +11,7 @@ from entity_models.persona_model import Persona
 
 app = Flask(__name__)
 
+
 class PersonaLogic:
     @classmethod
     def get_all_personas(cls):
@@ -75,7 +76,7 @@ class PersonaLogic:
     def get_persona_by_user(cls, username):
         try:
             persona = DataPersona.get_persona_by_user(username)
-            if persona != None:
+            if persona is not None:
                 return persona
             else:
                 return None

@@ -27,10 +27,9 @@ class PedidoLogic:
         pedidos_pendientes = []
         pedidos = DataPedido.get_pedidos_by_persona(persona)
         for ped in pedidos:
-            if ped.estado == True:
+            if ped.estado:
                 pedidos_pendientes.append(ped)
         return pedidos_pendientes
-
 
     @classmethod
     def add_pedido(cls, pedido):

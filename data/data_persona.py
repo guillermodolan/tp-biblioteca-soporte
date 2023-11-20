@@ -10,6 +10,7 @@ from entity_models.persona_model import Persona
 
 app = Flask(__name__)
 
+
 class DataPersona:
     @classmethod
     def get_all_personas(cls):
@@ -41,7 +42,7 @@ class DataPersona:
             clientes = (
                 Persona.query
                 .join(Pedido, Persona.id == Pedido.id_persona)
-                .filter(Pedido.estado == True)
+                .filter(Pedido.estado)
                 .all()
             )
             return clientes
@@ -51,7 +52,6 @@ class DataPersona:
         except Exception as e:
             app.logger.debug(f'Error inesperado: {e}')
             raise e
-
 
     @classmethod
     def add_persona(cls, persona):

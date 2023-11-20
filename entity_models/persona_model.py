@@ -4,6 +4,7 @@ from data.database import Database
 
 db = Database.db
 
+
 class Persona(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(150))

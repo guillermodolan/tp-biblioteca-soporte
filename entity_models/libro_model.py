@@ -4,6 +4,7 @@ from entity_models.categoria_model import Categoria
 
 db = Database.db
 
+
 class Libro(db.Model):
     id_libro = db.Column(db.Integer, primary_key=True)
     isbn = db.Column(db.String(30))

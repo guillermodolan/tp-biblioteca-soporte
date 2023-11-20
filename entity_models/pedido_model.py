@@ -23,7 +23,6 @@ class Pedido(db.Model):
             'id_libro': self.id_libro
         }
 
-
     @classmethod
     def from_dict(cls, data):
         pedido = cls()

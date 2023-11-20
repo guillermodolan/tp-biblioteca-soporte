@@ -9,7 +9,8 @@ from data.database import Database
 
 app = Flask(__name__)
 
-class DataPedido():
+
+class DataPedido:
     @classmethod
     def get_all_pedidos(cls):
         try:

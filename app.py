@@ -288,7 +288,7 @@ def add_persona():
 @app.route('/validar_nombre_usuario', methods=['POST'])
 def validar_nombre_usuario():
     nombre_usuario = request.form.get('nombre_usuario')
-    if PersonaLogic.get_persona_by_user(nombre_usuario) != None:
+    if PersonaLogic.get_persona_by_user(nombre_usuario) is not None:
         existe = True
     else:
         existe = False
@@ -659,8 +659,8 @@ def autor_mas_leido():
             año = request.form.get('anio')
             resultados = AutorLogic.autor_mas_leido_en_un_mes(mes, año)
             if len(resultados) != 0:
-                resultados_dict = [{'autor': autor, 'libros_leidos': libros_leidos} for autor,
-                libros_leidos in resultados]
+                resultados_dict = [{'autor': autor, 'libros_leidos': libros_leidos} for autor, libros_leidos in
+                                   resultados]
 
                 return render_template("autores_mas_leidos_en_un_mes.html",
                                        resultados_dict=resultados_dict)
@@ -696,8 +696,7 @@ def categoria_mas_leida():
             año = request.form.get('anio')
             resultados = CategoriaLogic.categorias_mas_leidas_en_un_mes(mes, año)
             if len(resultados) != 0:
-                resultados_dict = [{'categoria': cat, 'cantidad': cant} for cat,
-                cant in resultados]
+                resultados_dict = [{'categoria': cat, 'cantidad': cant} for cat, cant in resultados]
 
                 return render_template("categorias_mas_leidas_en_un_mes.html",
                                        resultados_dict=resultados_dict)

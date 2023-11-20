@@ -35,7 +35,7 @@ class LibroAPILogic:
                                 else:
                                     break
                             else:
-                                primer_categoria = "Categoría no disponible"
+                                primer_categoria = categoria_list[0]
 
                         libros.append({"titulo": titulo, "autores": autores,
                                        "categoria": primer_categoria, "isbn": primer_isbn})
@@ -62,7 +62,18 @@ class LibroAPILogic:
                         categoria = libro.get("subject", ["Categoría no disponible"])
                         isbn = libro.get("isbn", ["ISBN no disponible"])
 
-                        primer_categoria = categoria[0] if categoria else "Categoría no disponible"
+                        primer_categoria = "Categoría no disponible"
+
+                        if categoria is not ["Categoría no disponible"]:
+                            for cat in categoria:
+                                primer_categoria = cat
+                                for letra in cat:
+                                    if letra == ' ':
+                                        break
+                                else:
+                                    break
+                            else:
+                                primer_categoria = categoria[0]
 
                         libros.append({"titulo": titulo, "autores": autores_nombres,
                                        "categoria": primer_categoria, "isbn": isbn})
