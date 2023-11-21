@@ -24,7 +24,7 @@ class LibroAPILogic:
                         # Obtener solo el primer código ISBN si hay al menos uno
                         primer_isbn = isbn_list[0] if isbn_list else "ISBN no disponible"
 
-                        primer_categoria = "Categoría no disponible"
+                        primer_categoria = categoria_list[0]
 
                         if categoria_list is not ["Categoría no disponible"]:
                             for cat in categoria_list:
@@ -62,7 +62,7 @@ class LibroAPILogic:
                         categoria = libro.get("subject", ["Categoría no disponible"])
                         isbn = libro.get("isbn", ["ISBN no disponible"])
 
-                        primer_categoria = "Categoría no disponible"
+                        primer_categoria = categoria[0]
 
                         if categoria is not ["Categoría no disponible"]:
                             for cat in categoria:

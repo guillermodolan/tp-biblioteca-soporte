@@ -115,7 +115,9 @@ def enviar_correo_dos_dias_antes():
 
             # Crea el mensaje del correo
             asunto = 'Recordatorio de devolución'
-            mensaje = 'Recuerda que tu libro debe devolverse en dos días. Gracias por tu preferencia.'
+            mensaje = (f'Recuerda que tu libro debe devolverse en dos días. Gracias por tu preferencia.\n\n'
+                       f'Título: {pedido.libro.titulo}\n'
+                       f'Fecha de pedido: {pedido.fecha_pedido}')
             msg = Message(asunto, recipients=[persona.email])
             msg.body = mensaje
 
@@ -594,7 +596,7 @@ def confirmar_pedido():
                     # Convertir la fecha a una cadena (string) en un formato específico
                     fecha_actual_str = fecha_actual.strftime('%Y-%m-%d')
                     # Agrega 7 días a la fecha actual
-                    fecha_devolucion = fecha_actual + timedelta(days=7)
+                    fecha_devolucion = fecha_actual + timedelta(days=2)
                     fecha_devolucion_str = fecha_devolucion.strftime('%Y-%m-%d')
 
                     pedido.fecha_pedido = fecha_actual_str

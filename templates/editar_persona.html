@@ -37,7 +37,7 @@
     {{persona_editar.tipo_persona()}}
   </p>
   <p>
-    {{persona_editar.guardar()}}
+    {{persona_editar.guardar(class="update-person", onclick="return confirm('¿Estás seguro de actualizar la persona?')")}}
     <a href="{{url_for('home')}}">Cancelar</a>
   </p>
 </form>
