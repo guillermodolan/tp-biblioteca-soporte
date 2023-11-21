@@ -72,8 +72,12 @@ class DataPedido:
     @classmethod
     def get_pedidos_2_dias_de_devolucion(cls, fecha):
         try:
-            pedidos = Pedido.query.filter_by(fecha_devolucion=fecha).all()
-            return pedidos
+            dos_dias = Pedido.query.filter_by(fecha_devolucion=fecha).all()
+            dos_dias_a_devolver = []
+            for pedido in dos_dias:
+                if pedido.estado:
+                    dos_dias_a_devolver.append(pedido)
+            return dos_dias_a_devolver
         except SQLAlchemyError as e:
             app.logger.debug(f'Error al obtener pedidos con 2 días de devolución: {e}')
             raise e
