@@ -108,7 +108,11 @@ def enviar_correo_dos_dias_antes():
         two_days_from_now = today + timedelta(days=2)
         two_days_from_now_str = two_days_from_now.strftime('%Y-%m-%d')
 
-        pedidos_a_enviar = PedidoLogic.get_pedidos_2_dias_de_devolucion(two_days_from_now_str)
+        pedidos_dos_dias = PedidoLogic.get_pedidos_2_dias_de_devolucion(two_days_from_now_str)
+        pedidos_a_enviar = []
+        for pedido in pedidos_dos_dias:
+            if pedido.estado:
+                pedidos_a_enviar.append(pedido)
 
         for pedido in pedidos_a_enviar:
             persona = Persona.query.get(pedido.id_persona)
