@@ -408,6 +408,23 @@ def get_libros_by_genre(genero):
         libros_filtrados = [libro for libro in libros if
                             libro['titulo'] not in [pedido.libro.titulo for pedido in pedidos_pendientes]]
 
+        libros_seleccionados = random.sample(libros_filtrados, 5)
+        print(f'Cantidad seleccionada: {len(libros_seleccionados)}')
+
+        # Guardo a los libros en la sesión. Me servirán más adelante para
+        # enviar recomendaciones por email al cliente
+        diccionario_libros = {
+            libro['titulo']: {
+                'titulo': libro['titulo'],
+                'autores': libro['autores'],
+                'categoria': libro['categoria'],
+                'isbn': libro['isbn']
+            } for libro in libros_seleccionados
+        }
+
+
+        session['diccionario_libros'] = diccionario_libros
+
         # Agregar una bandera 'en_carrito' a cada libro para indicar si está en el carrito o no
         for libro in libros_filtrados:
             libro['en_carrito'] = any(item['titulo'] == libro['titulo'] for item in carrito)
@@ -777,7 +794,7 @@ def obtener_persona_logueada():
 def envia_recomendaciones(recomendaciones_de_lectura):
     persona_logueada = obtener_persona_logueada()
     asunto = 'Recomendaciones para leer'
-    mensaje = f'Aquí te enviamos algunas recomendaciones en base al autor que elegiste:\n\n'
+    mensaje = f'Aquí te enviamos algunas recomendaciones en base al libro que elegiste:\n\n'
 
     for i, (titulo, libro_info) in enumerate(recomendaciones_de_lectura, start=1):
         mensaje += f'Título: {libro_info["titulo"]}\n'
