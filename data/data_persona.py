@@ -25,6 +25,18 @@ class DataPersona:
             raise e
 
     @classmethod
+    def get_all_administradores(cls):
+        try:
+            administradores = Persona.query.filter_by(tipo_persona='administrador').order_by('id')
+            return administradores
+        except SQLAlchemyError as e:
+            app.logger.debug(f'Error en la base de datos: {e}')
+            raise e
+        except Exception as e:
+            app.logger.debug(f'Error inesperado: {e}')
+            raise e
+
+    @classmethod
     def get_all_clientes(cls):
         try:
             clientes = Persona.query.filter_by(tipo_persona='cliente').order_by(Persona.id)

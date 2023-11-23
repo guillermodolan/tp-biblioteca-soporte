@@ -262,33 +262,62 @@ def add_persona():
                                mensaje='Página no encontrada',
                                persona_logueada=persona_logueada)
     else:
-        persona = Persona()
-        registro_cliente_form = RegistroClienteForm(obj=persona)
-        if request.method == 'POST':
-            contraseña = request.form['contraseña']
-            nombre_usuario = request.form['nombre_usuario']
-            if registro_cliente_form.validate_on_submit():
-                if PersonaLogic.get_persona_by_user(nombre_usuario):
-                    return render_template('mensaje.html',
-                                           mensaje='Error: Nombre de usuario ya existente',
-                                           persona_logueada=persona_logueada)
+        administradores = PersonaLogic.get_all_administradores()
+        if len(administradores) == 0:
+            persona = Persona()
+            registro_form = RegistroForm(obj=persona)
+            if request.method == 'POST':
+                contraseña = request.form['contraseña']
+                nombre_usuario = request.form['nombre_usuario']
+
+                if registro_form.validate_on_submit():
+                    if PersonaLogic.get_persona_by_user(nombre_usuario):
+                        return render_template('mensaje.html',
+                                               mensaje='Error: Nombre de usuario ya existente',
+                                               persona_logueada=persona_logueada)
+                    else:
+                        Persona.establece_contraseña(persona, contraseña)
+                        registro_form.populate_obj(persona)
+                        PersonaLogic.add_persona(persona)
+                        return render_template('mensaje.html',
+                                               mensaje='Persona agregada correctamente',
+                                               persona_logueada=persona_logueada)
                 else:
-                    Persona.establece_contraseña(persona, contraseña)
-                    registro_cliente_form.populate_obj(persona)
-                    PersonaLogic.add_persona(persona)
                     return render_template('mensaje.html',
-                                           mensaje='Se ha registrado correctamente',
+                                           mensaje='Error al agregar persona',
                                            persona_logueada=persona_logueada)
-            else:
-                return render_template('mensaje.html',
-                                       mensaje='Error al registrarse',
-                                       persona_logueada=persona_logueada)
+            return render_template('alta_persona.html',
+                                   persona_agregar=registro_form,
+                                   persona_logueada=persona_logueada)
+
         else:
             persona = Persona()
             registro_cliente_form = RegistroClienteForm(obj=persona)
-            return render_template('alta_persona.html',
-                                   persona_agregar=registro_cliente_form,
-                                   persona_logueada=persona_logueada)
+            if request.method == 'POST':
+                contraseña = request.form['contraseña']
+                nombre_usuario = request.form['nombre_usuario']
+                if registro_cliente_form.validate_on_submit():
+                    if PersonaLogic.get_persona_by_user(nombre_usuario):
+                        return render_template('mensaje.html',
+                                               mensaje='Error: Nombre de usuario ya existente',
+                                               persona_logueada=persona_logueada)
+                    else:
+                        Persona.establece_contraseña(persona, contraseña)
+                        registro_cliente_form.populate_obj(persona)
+                        PersonaLogic.add_persona(persona)
+                        return render_template('mensaje.html',
+                                               mensaje='Se ha registrado correctamente',
+                                               persona_logueada=persona_logueada)
+                else:
+                    return render_template('mensaje.html',
+                                           mensaje='Error al registrarse',
+                                           persona_logueada=persona_logueada)
+            else:
+                persona = Persona()
+                registro_cliente_form = RegistroClienteForm(obj=persona)
+                return render_template('alta_persona.html',
+                                       persona_agregar=registro_cliente_form,
+                                       persona_logueada=persona_logueada)
 
 
 @app.route('/validar_nombre_usuario', methods=['POST'])
