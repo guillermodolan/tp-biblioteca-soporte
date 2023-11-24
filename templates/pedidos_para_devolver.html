@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pedidos a devolver</title>
+</head>
+<body>
+<h1>Pedidos por devolver de {{cliente.nombre}} {{cliente.apellido}}</h1>
+
+<div>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Fecha de pedido</th>
+                <th>Fecha de devolución</th>
+                <th>Estado</th>
+                <th>Título del libro</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ped in pedidos_para_devolver %}
+                <tr>
+                    <td>{{ped.numero_pedido}}</td>
+                    <td>{{ped.fecha_pedido}}</td>
+                    <td>{{ped.fecha_devolucion}}</td>
+                    {% if ped.estado == True %}
+                        <td>Pendiente de devolución</td>
+                    {% endif %}
+                    <td>{{ped.libro.titulo}}</td>
+                    <td><a href="#" class="btn btn-danger return-book" data-titulo="{{ ped.libro.titulo }}" data-id="{{ ped.numero_pedido }}">Realizar devolución</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<br>
+<a href="{{url_for('home')}}">Volver</a>
+
+</body>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var returnButtons = document.querySelectorAll('.return-book');
+
+        returnButtons.forEach(function (button) {
+            button.addEventListener('click', function (event) {
+                event.preventDefault();
+
+                var titulo = button.getAttribute('data-titulo');
+                var id = button.getAttribute('data-id');
+                var confirmation = confirm('¿Estás seguro de que deseas devolver el libro ' + titulo + '?');
+
+                if (confirmation) {
+                    // Si el usuario confirma, redirige al enlace original de devolucion
+                    window.location.href = "{{url_for('finaliza_devolucion', id=0)}}" + id;
+                }
+            });
+        });
+    });
+</script>
+</html>

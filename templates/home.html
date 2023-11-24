@@ -6,10 +6,19 @@
     <title>Biblioteca Konigari</title>
 </head>
 <body>
-<h1>Bienvenido {{clienteLogueado.nombre}} {{clienteLogueado.apellido}}</h1>
-<a href="{{url_for('alquiler_libros')}}">Alquilar libro</a>
-<a href="{{url_for('historial_libros')}}">Historial Libros</a>
-<a href="{{url_for('mostrar_carrito')}}">Mostrar carrito</a>
+<h1>Bienvenido {{persona_logueda.nombre}} {{persona_logueda.apellido}}</h1>
+{% if persona_logueda.tipo_persona == 'cliente' %}
+    <a href="{{ url_for('alquiler_libros') }}">Alquilar libro</a>
+    <a href="{{ url_for('historial_libros') }}">Historial Libros</a>
+    <a href="{{ url_for('mostrar_carrito') }}">Mostrar carrito</a>
+{% endif %}
+{% if persona_logueda.tipo_persona == 'administrador' %}
+    <a href="{{ url_for('realizar_devolucion') }}">Realizar una devolución</a>
+    <a href="{{ url_for('add_persona') }}">Agregar persona</a>
+    <a href="{{ url_for('get_all_clientes') }}">Listado de clientes</a>
+    <a href="{{ url_for('estadisticas') }}">Mostrar estadísticas</a>
+    <a href="{{ url_for('enviar_correo_dos_dias_antes') }}">Enviar emails de recordatorios</a>
+{% endif %}
 <a href="{{url_for('logout')}}">Cerrar sesión</a>
 </body>
 </html>

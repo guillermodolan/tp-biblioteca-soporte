@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Categoría más leída en un mes</title>
+</head>
+<body>
+    <form action="/categoria_mas_leida" method="post">
+        <div>
+            <label for="mes">Selecciona un mes:</label>
+            <select id="mes" name="mes">
+                <option value="01">Enero</option>
+                <option value="02">Febrero</option>
+                <option value="03">Marzo</option>
+                <option value="04">Abril</option>
+                <option value="05">Mayo</option>
+                <option value="06">Junio</option>
+                <option value="07">Julio</option>
+                <option value="08">Agosto</option>
+                <option value="09">Septiembre</option>
+                <option value="10">Octubre</option>
+                <option value="11">Noviembre</option>
+                <option value="12">Diciembre</option>
+            </select>
+        </div>
+        <div>
+            <label for="anio">Selecciona un año:</label>
+            <select id="anio" name="anio" >
+                {% for year in range(fecha_actual.year, 2009, -1) %}
+                    <option value="{{ year }}">{{ year }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <button type="submit">Buscar</button>
+        </div>
+    </form>
+<br><br><a href="{{url_for('home')}}">Volver al inicio</a>
+</body>
+</html>

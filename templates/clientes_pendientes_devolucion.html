@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Clientes pendientes de devolución</title>
+</head>
+<body>
+<h1>Clientes pendientes de devolución</h1>
+
+<div>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Email</th>
+                <th>Nombre de usuario</th>
+                <th>Teléfono</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for per in clientes %}
+                <tr>
+                    <td>{{per.id}}</td>
+                    <td>{{per.nombre}}</td>
+                    <td>{{per.apellido}}</td>
+                    <td>{{per.email}}</td>
+                    <td>{{per.nombre_usuario}}</td>
+                    <td>{{per.telefono}}</td>
+                    <td><a href="{{url_for('clientes_en_devolucion', id=per.id)}}">Realizar una devolución</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<br>
+<a href="{{url_for('home')}}">Volver</a>
+
+</body>
+</html>
