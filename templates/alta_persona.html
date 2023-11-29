@@ -4,45 +4,83 @@
     <meta charset="UTF-8">
     <title>Alta de persona</title>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 </head>
-<body>
-<h1>Alta de persona</h1>
-<form method="POST">
-  {{ persona_agregar.csrf_token }}
-  <p>
-    {{ persona_agregar.nombre.label }} <br/>
-    {{ persona_agregar.nombre(size=70) }}
-  </p>
-  <p>
-    {{ persona_agregar.apellido.label }} <br/>
-    {{ persona_agregar.apellido(size=70) }}
-  </p>
-  <p>
-    {{ persona_agregar.email.label }} <br/>
-    {{ persona_agregar.email(size=30) }}
-  </p>
-  <p>
-    {{ persona_agregar.nombre_usuario.label }} <br/>
-    {{ persona_agregar.nombre_usuario(size=70, id='nombre_usuario') }}
-    <span id="mensaje_nombre_usuario" style="color: red;"></span>
-  </p>
-  <p>
-    {{ persona_agregar.contraseña.label }} <br/>
-    {{ persona_agregar.contraseña(size=70, type="password") }}
-  </p>
-  <p>
-    {{ persona_agregar.tipo_persona.label }} <br/>
-    {{ persona_agregar.tipo_persona }}
-  </p>
-  <p>
-    {{ persona_agregar.telefono.label }} <br/>
-    {{ persona_agregar.telefono(size=70) }}
-  </p>
-  <p>
-    {{ persona_agregar.guardar() }}
-    <a href="{{ url_for('login') }}">Cancelar</a>
-  </p>
-</form>
+<body style="background-color: rgba(102, 173, 255, 0.53);">
+<section class="vh-100" >
+    <div class="container py-5 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col col-xl-10">
+                <div class="card" style="border-radius: 1rem;">
+                    <div class="row g-0">
+                        <div class="col-md-6 col-lg-5 d-none d-md-block" style="padding: 0;">
+                          <img src="../static/libros.jpg"
+                         alt="login form" class="img-fluid h-100" style="border-radius: 1rem 0 0 1rem; object-fit: cover;" />
+                        </div>
+
+                        <div class="col-md-6 col-lg-7 d-flex align-items-center">
+                            <div class="card-body p-4 p-lg-5 text-black" >
+                              <h1>Alta de persona</h1>
+
+
+                              <form method="POST">
+                                {{ persona_agregar.csrf_token }}
+                                <div class="form-outline mb-4">
+                                <p>
+                                  {{ persona_agregar.nombre.label }} <br/>
+                                  {{ persona_agregar.nombre(class="form-control form-control-lg") }}
+                                </p>
+                                </div>
+                                <div class="form-outline mb-4">
+                                <p>
+                                  {{ persona_agregar.apellido.label }} <br/>
+                                  {{ persona_agregar.apellido(class="form-control form-control-lg") }}
+                                </p>
+                                </div>
+                                <div class="form-outline mb-4">
+                                <p>
+                                  {{ persona_agregar.email.label }} <br/>
+                                  {{ persona_agregar.email(class="form-control form-control-lg") }}
+                                </p>
+                                </div>
+                                <div class="form-outline mb-4">
+                                <p>
+                                  {{ persona_agregar.nombre_usuario.label }} <br/>
+                                  {{ persona_agregar.nombre_usuario(class="form-control form-control-lg", id='nombre_usuario') }}
+                                  <span id="mensaje_nombre_usuario" style="color: red;"></span>
+                                </p>
+                                </div>
+                                <div class="form-outline mb-4">
+                                <p>
+                                  {{ persona_agregar.contraseña.label }} <br/>
+                                  {{ persona_agregar.contraseña(class="form-control form-control-lg", type="password") }}
+                                </p>
+                                </div>
+                                <div class="form-outline mb-4">
+                                <p>
+                                  {{ persona_agregar.tipo_persona.label }} <br/>
+                                  {{ persona_agregar.tipo_persona }}
+                                </p>
+                                </div>
+                                <div class="form-outline mb-4">
+                                <p>
+                                  {{ persona_agregar.telefono.label }} <br/>
+                                  {{ persona_agregar.telefono(class="form-control form-control-lg") }}
+                                </p>
+                                </div>
+                                <p>
+                                  {{ persona_agregar.guardar(class="btn btn-dark btn-lg btn-block") }}
+                                  <a href="{{ url_for('login') }}">Cancelar</a>
+                                </p>
+                              </form>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 </body>
 <script>
 var typingTimer;
