@@ -3,24 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <title>Alquiler de libros</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+ <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+ <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/brands.js" integrity="sha384-sCI3dTBIJuqT6AwL++zH7qL8ZdKaHpxU43dDt9SyOzimtQ9eyRhkG3B7KMl6AO19" crossorigin="anonymous"></script>
+ <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/fontawesome.js" integrity="sha384-7ox8Q2yzO/uWircfojVuCQOZl+ZZBg2D2J5nkpLqzH1HY0C1dHlTKIbpRz/LG23c" crossorigin="anonymous"></script>
+ <style>
+ body {
+ margin: 0; /* Reset margin to ensure full-width background */
+ padding: 0;
+ background-image: url('static/libro_fondo.png');
+ background-size: cover;
+ background-position: center;
+ background-attachment: fixed; /* Optional: This ensures the background remains fixed while scrolling */
+ }
+
+
+ .navbar {
+    background-color: transparent !important;
+   }
+ .navbar .nav-item {
+           margin-right: auto;
+       }
+ h1 {
+
+
+     color: #358BF7;
+     padding: 15px;
+     font-style: italic;
+     font-family: 'Candara', sans-serif;
+     font-weight: bold;
+       }
+ </style>
 </head>
 <body>
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+ <div class="container-fluid">
+   <a class="navbar-brand" href="#" style="color: #fff; padding: 15px;font-weight: bold;">Biblioteca konigari</a>
+   <ul class="nav justify-content-end">
+   <a style= "color: #fff;padding: 20px;" class="icon-link icon-link-hover" href="{{url_for('home')}}">Home
+     <i class="bi bi-house-door"></i></a>
+   <a style= "color: #fff;padding: 20px;" class="icon-link icon-link-hover" href="{{url_for('mostrar_carrito')}}">Mostrar carrito
+     <i class="bi bi-cart3"></i></a>
+   </ul>
+ </div>
+</nav>
+<br>
+<br>
+<header>
+ <div class="pricing-header p-3 pb-md-4 mx-auto text-center">
     <h1>Página para alquilar libros</h1>
-    <form action="/busca_libros" method="post">
-        <div>
-            <!-- Seteo por default al radioButton de 'Buscar por autor' -->
-            <input type="radio" name="opcion" value="autor" checked> Buscar por autor
-            <input type="radio" name="opcion" value="genero"> Buscar por género
-        </div>
-        <p>
-            <input type="text" name="buscador" placeholder="Ingrese autor o género" required>
-        </p>
-        <div>
-            <button type="submit">Buscar</button>
-        </div>
-    </form>
-    <br>
-    <a href="{{url_for('home')}}">Home</a>
-    <a href="{{url_for('mostrar_carrito')}}">Carrito</a>
+ </div>
+</header>
+<main>
+   <div class="container text-center">
+     <div class="row align-items-end">
+       <div class="col">
+
+       </div>
+       <div class="col">
+         <div class="card" style="background-color: rgba(255, 255, 255, 0.9); /* Fondo blanco con 0.9 de opacidad */">
+           <div class="card-body">
+               <h2 style="color: rgba(6, 174, 255, 0.86);  padding: 10px;  font-size: 18px; font-family: 'Arial', sans-serif;">seleccione una opción e ingrese el autor o género deseado</h2>
+
+            <form action="/busca_libros" method="post">
+                <div class="container text-center">
+                    <!-- Seteo por default al radioButton de 'Buscar por autor' -->
+                    <input class="form-check-input" type="radio" name="opcion" value="autor" checked> Buscar por autor
+                    <input class="form-check-input" type="radio" name="opcion" value="genero"> Buscar por género
+                    <br>
+
+                    <input class="form-control me-2" type="search" name="buscador" placeholder="Ingrese autor o género" required>
+                    <br>
+
+                    <button class="btn btn-outline-success" type="submit">Buscar</button>
+                </div>
+            </form>
+            </div>
+         </div>
+       </div>
+       <div class="col">
+
+
+       </div>
+     </div>
+   </div>
+ </main>
+
 </body>
 </html>
