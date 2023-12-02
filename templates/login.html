@@ -7,7 +7,7 @@
    body {
    margin: 0; /* Reset margin to ensure full-width background */
    padding: 0;
-   background-image: url('static/libro_fondo.png');
+   background-image: url('{{ url_for('static', filename='libro_fondo.png') }}');
    background-size: cover;
    background-position: center;
    background-attachment: fixed; /* Optional: This ensures the background remains fixed while scrolling */
