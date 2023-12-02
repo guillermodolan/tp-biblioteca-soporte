@@ -2,36 +2,97 @@
 <html>
 <head>
     <title>Carrito de Pedidos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+     body {
+         margin: 0; /* Reset margin to ensure full-width background */
+         padding: 0;
+         background-image: url('{{ url_for('static', filename='libro_fondo.png') }}');
+         background-size: cover;
+         background-position: center;
+         background-attachment: fixed; /* Optional: This ensures the background remains fixed while scrolling */
+         }
+     .navbar {
+    background-color: transparent !important;
+        }
+    .navbar .nav-item {
+           margin-right: auto;
+       }
+    .table {
+            background-color: rgba(255, 255, 255, 0.8); /* Fondo blanco con 80% de opacidad */
+            border-radius: 10px; /* Bordes redondeados para un aspecto más suave */
+        }
+
+    .table th {
+        background-color: rgba(255, 255, 255, 0.6); /* Fondo negro con 60% de opacidad para el encabezado */
+        color: black;
+    }
+
+    .table td {
+        background-color: rgba(255, 255, 255, 0.6); /* Fondo blanco con 100% de opacidad para las celdas de datos */
+
+    }
+
+   </style>
 </head>
 <body>
-    <h1>Carrito de Pedidos</h1>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+           <a class="navbar-brand" href="#" style="color: #fff; padding: 15px;font-weight: bold;">Biblioteca konigari</a>
+           <ul class="nav justify-content-end">
+           <a style= "color: #fff;padding: 20px;" class="icon-link icon-link-hover" href="{{url_for('home')}}">Home
+             <i class="bi bi-house-door"></i></a>
+           </ul>
+     </div>
+    </nav>
+    <div class="container text-center">
+        <div class="row align-items-center">
+            <div class="col">
 
-    {% if carrito_de_pedidos|length > 3 %}
-        <p>Solo puede alquilar 3 libros.</p>
-    {% endif %}
+            </div>
+            <div class="col-6">
+                <h1 style="color: #358BF7">Carrito de Pedidos</h1>
+
+                {% if carrito_de_pedidos|length > 3 %}
+                    <p style="color: #fff">Solo puede alquilar 3 libros.</p>
+                {% endif %}
+                <table class="table" >
+                   <thead>
+                   <tr>
+                       <th scope="col">Titulo</th>
+                       <th scope="col">Autor(es)</th>
+                       <th scope="col">Categoria</th>
+                       <th scope="col"> </th>
+                   </tr>
+                   </thead>
+                    <tbody>
+                        {% for libro in carrito_de_pedidos %}
+                        <tr>
+                            <td> {{ libro.titulo }}</td>
+                            <td>{{ libro.autores|join(', ') }}</td>
+                            <td>{{ libro.categoria }}</td>
+                            <td><a href="#" class="btn btn-danger delete-book" data-titulo="{{ libro.titulo }}">Eliminar</a> </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <form id="confirmarPedidoForm" action="/confirmar_pedido" method="post">
+                    <button type="button" class="btn btn-secondary" id="confirmarPedidoBtn" {% if cant_libros_totales > 3 or carrito_de_pedidos|length == 0 %}disabled{% endif %}>Confirmar Pedido</button>
+                </form>
+                <br>
+                {% if cant_libros_totales < 3 %}
+                    <a href="{{url_for('alquiler_libros')}}" class="btn btn-success btn-lg">Agregar otro libro</a>
+                {% else %}
+                    <p style="color: #fff;font-size: 1.2em">No puede agregar más libros, ha alcanzado el límite de 3 libros.</p>
+                {% endif %}
+            </div>
+            <div class="col">
+            </div>
+        </div>
+    </div>
 
 
-    <ul>
-        {% for libro in carrito_de_pedidos %}
-            <li>
-                <strong>Título:</strong> {{ libro.titulo }}<br>
-                <strong>Autor(es):</strong> {{ libro.autores|join(', ') }}<br>
-                <strong>Categoría:</strong> {{ libro.categoria }}<br>
-                <a href="#" class="btn btn-danger delete-book" data-titulo="{{ libro.titulo }}">Eliminar</a>
-            </li>
-        {% endfor %}
-    </ul>
-
-    <form id="confirmarPedidoForm" action="/confirmar_pedido" method="post">
-        <button type="button" id="confirmarPedidoBtn" {% if cant_libros_totales > 3 or carrito_de_pedidos|length == 0 %}disabled{% endif %}>Confirmar Pedido</button>
-    </form>
-
-    {% if cant_libros_totales < 3 %}
-        <a href="{{url_for('alquiler_libros')}}" class="btn btn-primary">Agregar otro libro</a>
-    {% else %}
-        <p>No puede agregar más libros, ha alcanzado el límite de 3 libros.</p>
-    {% endif %}
-    <a href="{{url_for('home')}}">Volver al inicio</a>
 </body>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
