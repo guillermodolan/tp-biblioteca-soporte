@@ -451,7 +451,6 @@ def get_libros_by_genre(genero):
             } for libro in libros_seleccionados
         }
 
-
         session['diccionario_libros'] = diccionario_libros
 
         # Agregar una bandera 'en_carrito' a cada libro para indicar si está en el carrito o no
