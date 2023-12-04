@@ -3,42 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <title>Listado de {{ titulo }}</title>
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+     body {
+         margin: 0; /* Reset margin to ensure full-width background */
+         padding: 0;
+         background-image: url('{{ url_for('static', filename='libro_fondo.png') }}');
+         background-size: cover;
+         background-position: center;
+         background-attachment: fixed; /* Optional: This ensures the background remains fixed while scrolling */
+         }
+     .navbar {
+    background-color: transparent !important;
+        }
+    .navbar .nav-item {
+           margin-right: auto;
+       }
+    .table {
+            background-color: rgba(255, 255, 255, 0.8); /* Fondo blanco con 80% de opacidad */
+            border-radius: 10px; /* Bordes redondeados para un aspecto más suave */
+        }
+
+    .table th {
+        background-color: rgba(255, 255, 255, 0.6); /* Fondo negro con 60% de opacidad para el encabezado */
+        color: black;
+    }
+
+    .table td {
+        background-color: rgba(255, 255, 255, 0.6); /* Fondo blanco con 100% de opacidad para las celdas de datos */
+
+    }
+
+   </style>
 </head>
 <body>
-<h1>Listado de {{ titulo }}</h1>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+           <a class="navbar-brand" href="#" style="color: #fff; padding: 15px;font-weight: bold;">Biblioteca konigari</a>
+           <ul class="nav justify-content-end">
+           <a style= "color: #fff;padding: 20px;" class="icon-link icon-link-hover" href="{{url_for('home')}}">Home
+             <i class="bi bi-house-door"></i></a>
+           </ul>
+     </div>
+    </nav>
 
-<div>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Nombre</th>
-                <th>Apellido</th>
-                <th>Email</th>
-                <th>Nombre de usuario</th>
-                <th>Teléfono</th>
-                <th></th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for per in personas_param %}
-                <tr>
-                    <td>{{per.id}}</td>
-                    <td>{{per.nombre}}</td>
-                    <td>{{per.apellido}}</td>
-                    <td>{{per.email}}</td>
-                    <td>{{per.nombre_usuario}}</td>
-                    <td>{{per.telefono}}</td>
-                    <td><a href="{{url_for('update_persona', id=per.id)}}">Editar</a></td>
-                    <td><a href="#" class="btn btn-danger delete-person" data-nombre="{{ per.nombre }} " data-apellido="{{ per.apellido }}" data-id="{{ per.id }}">Eliminar</a></td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-<br>
-<a href="{{url_for('home')}}">Volver</a>
+    <div class="container text-center">
+        <div class="row align-items-center">
+            <div class="col">
+
+            </div>
+            <div class="col-6">
+                <h1 style="color: #358BF7">Listado de {{ titulo }}</h1>
+                <table class="table" >
+                   <thead>
+                   <tr>
+                       <th scope="col">Id</th>
+                       <th scope="col">Nombre</th>
+                       <th scope="col">Apellido</th>
+                       <th scope="col">Email</th>
+                       <th scope="col">Nombre Usuario</th>
+                       <th scope="col">Telefono</th>
+                       <th scope="col"> </th>
+                       <th scope="col"> </th>
+                   </tr>
+                   </thead>
+                   <tbody>
+
+                        {% for per in personas_param %}
+                            <tr>
+                                <td>{{per.id}}</td>
+                                <td>{{per.nombre}}</td>
+                                <td>{{per.apellido}}</td>
+                                <td>{{per.email}}</td>
+                                <td>{{per.nombre_usuario}}</td>
+                                <td>{{per.telefono}}</td>
+                                <td><a href="{{url_for('update_persona', id=per.id)}}">Editar</a></td>
+                                <td><a href="#" class="btn btn-danger delete-person" data-nombre="{{ per.nombre }} " data-apellido="{{ per.apellido }}" data-id="{{ per.id }}">Eliminar</a></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col">
+            </div>
+        </div>
+    </div>
 
 </body>
 <script>

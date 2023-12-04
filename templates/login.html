@@ -2,17 +2,74 @@
 <html>
 <head>
     <title>Iniciar Sesión</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+<style>
+   body {
+   margin: 0; /* Reset margin to ensure full-width background */
+   padding: 0;
+   background-image: url('{{ url_for('static', filename='libro_fondo.png') }}');
+   background-size: cover;
+   background-position: center;
+   background-attachment: fixed; /* Optional: This ensures the background remains fixed while scrolling */
+   }
+   .navbar {
+    background-color: transparent !important;
+   }
+   </style>
+
 </head>
-<body>
-    <h1>Iniciar Sesión</h1>
-    <form method="POST">
-        <label for="nombre_usuario">Nombre de Usuario</label>
-        <input type="text" name="nombre_usuario" required><br>
-        <label for="contraseña">Contraseña</label>
-        <input type="password" name="contraseña" required><br>
-        <input type="submit" value="Iniciar Sesión">
-    </form>
-    <a href="{{url_for('add_persona')}}">Registrarme</a><br><br>
-    <p>Si es nuevo en el sistema, cree una cuenta con el link "Registrarme"</p>
+<body >
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+   <div class="container-fluid">
+       <a class="navbar-brand" href="#" style="color: #fff; padding: 15px;font-weight: bold;">Biblioteca konigari</a>
+
+
+   </div>
+</nav>
+<br>
+<br>
+
+<div class="container text-center">
+   <div class="row align-items-end">
+       <div class="col">
+
+
+       </div>
+       <div class="col">
+           <div class="card" style="background-color: rgba(255, 255, 255, 0.9); /* Fondo blanco con 0.9 de opacidad */">
+               <div class="card-body">
+
+                    <div class="d-flex align-items-center mb-3 pb-1">
+                            <i class="fas fa-cubes fa-2x me-3" style="color: #ff6219;"></i>
+                            <span class="h1 fw-bold mb-0">Iniciar Sesión</span>
+                    </div>
+                    <h5 class="fw-normal mb-3 pb-3" style="letter-spacing: 1px;">Ingresar a tu cuenta</h5>
+                    <form method="POST">
+                        <div class="form-outline mb-4">
+                        <label for="nombre_usuario">Nombre de Usuario</label>
+                        <input type="text" name="nombre_usuario" class="form-control form-control-lg" required>
+                        </div>
+                        <div class="form-outline mb-4">
+                        <label for="contraseña">Contraseña</label>
+                        <input type="password" name="contraseña" class="form-control form-control-lg" required>
+                        </div>
+                        <div class="pt-1 mb-4">
+                        <input class="btn btn-dark btn-lg btn-block" type="submit" value="Iniciar Sesión">
+                        </div>
+                    </form>
+                    <a href="{{url_for('add_persona')}}">Registrarme</a><br><br>
+                    <p class="mb-5 pb-lg-2" style="color: #000000;">Si es nuevo en el sistema, cree una cuenta con el link "Registrarme"</p>
+                 </div>
+           </div>
+           <br>
+           <br>
+       </div>
+
+       <div class="col">
+
+       </div>
+   </div>
+</div>
+
 </body>
 </html>

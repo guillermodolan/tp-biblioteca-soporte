@@ -5,8 +5,42 @@
     <link rel="stylesheet" href="https://pyscript.net/releases/2023.11.1/core.css" />
     <script type="module" src="https://pyscript.net/releases/2023.11.1/core.js"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+     body {
+         margin: 0; /* Reset margin to ensure full-width background */
+         padding: 0;
+         background-image: url('{{ url_for('static', filename='libro_fondo.png') }}');
+         background-size: cover;
+         background-position: center;
+         background-attachment: fixed; /* Optional: This ensures the background remains fixed while scrolling */
+         }
+     .navbar {
+    background-color: transparent !important;
+        }
+    .navbar .nav-item {
+           margin-right: auto;
+       }
+       h1 {
+     color: #358BF7;
+     padding: 15px;
+     font-style: italic;
+     font-family: 'Candara', sans-serif;
+     font-weight: bold;
+       }
+       </style>
 </head>
 <body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+           <a class="navbar-brand" href="#" style="color: #fff; padding: 15px;font-weight: bold;">Biblioteca konigari</a>
+           <ul class="nav justify-content-end">
+           <a style= "color: #fff;padding: 20px;" class="icon-link icon-link-hover" href="{{url_for('home')}}">Home
+             <i class="bi bi-house-door"></i></a>
+           </ul>
+     </div>
+    </nav>
     <h1>Categorías más leídas en un mes</h1>
     <div id="lineplot"></div>
     <script>
@@ -31,6 +65,5 @@
             },
         });
     </script>
-<br><br><a href="{{url_for('home')}}">Volver al inicio</a>
 </body>
 </html>
