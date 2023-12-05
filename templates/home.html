@@ -51,14 +51,14 @@
 
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#" style="color: #fff; padding: 15px;font-weight: bold;">Biblioteca konigari</a>
-        {% if persona_logueda.tipo_persona == 'cliente' %}
+        <a class="navbar-brand" href="#" style="color: #fff; padding: 15px;font-weight: bold;">Biblioteca Konigari</a>
+        {% if persona_logueada.tipo_persona == 'cliente' %}
 
             <a style= "color: #fff;padding: 20px;" class="icon-link icon-link-hover" href="{{ url_for('alquiler_libros') }}">Alquilar libro <i class="bi bi-book"></i></a>
             <a style= "color: #fff;padding: 20px;" class="icon-link icon-link-hover" href="{{ url_for('historial_libros') }}">Historial Libros <i class="bi bi-clock-history"></i></a>
             <a style= "color: #fff;padding: 20px;" class="icon-link icon-link-hover" href="{{ url_for('mostrar_carrito') }}">Mostrar carrito <i class="bi bi-cart3"></i></a>
         {% endif %}
-        {% if persona_logueda.tipo_persona == 'administrador' %}
+        {% if persona_logueada.tipo_persona == 'administrador' %}
             <a style= "color: #fff;padding: 20px;" class="icon-link icon-link-hover" href="{{ url_for('realizar_devolucion') }}">Realizar una devolución <i class="bi bi-journal-check"></i></a>
             <a style= "color: #fff;padding: 20px;" class="icon-link icon-link-hover" href="{{ url_for('add_persona') }}">Agregar persona <i class="bi bi-person-fill-add"></i></a>
             <a style= "color: #fff;padding: 20px;" class="icon-link icon-link-hover" href="{{ url_for('get_all_clientes') }}">Clientes <i class="bi bi-people-fill"></i></a>
@@ -69,6 +69,6 @@
     </div>
 </nav>
 <h1>Bienvenido</h1>
-<h2>{{persona_logueda.nombre}} {{persona_logueda.apellido}}</h2>
+<h2>{{persona_logueada.nombre}} {{persona_logueada.apellido}}</h2>
 </body>
 </html>

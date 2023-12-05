@@ -63,18 +63,17 @@ def login():
     elif request.method == 'POST':
         nombre_usuario = request.form['nombre_usuario']
         contraseña = request.form['contraseña']
-
         persona = PersonaLogic.valida_credenciales(nombre_usuario, contraseña)
         if persona:
             # Guardo a la persona en la sesión, para que se mueva por la página web sin necesidad
             # de loguearse a cada rato.
-            session['persona_logueda'] = persona.to_dict()
-            return render_template('home.html', persona_logueda=persona)
+            session['persona_logueada'] = persona.to_dict()
+            return render_template('home.html',
+                                   persona_logueada=persona)
         else:
             return render_template('mensaje.html',
                                    mensaje='Usuario o contraseña incorrecto/s',
                                    persona_logueada=persona_logueada)
-
     else:
         return render_template('login.html')
 
@@ -83,10 +82,10 @@ def login():
 def home():
     # A la persona que guardé en la sesión en el método login(), lo accedo desde este método, el cual
     # es para la página principal
-    persona_data = session.get('persona_logueda')
-    if persona_data:
-        persona = Persona.from_dict(persona_data)
-        return render_template('home.html', persona_logueda=persona)
+    persona_logueada = obtener_persona_logueada()
+    if persona_logueada:
+        return render_template('home.html',
+                               persona_logueada=persona_logueada)
     else:
         return redirect(url_for('login'))
 
@@ -94,7 +93,7 @@ def home():
 @app.route('/logout')
 def logout():
     # Elimino los datos de la sesión de la persona
-    session.pop('persona_logueda', None)
+    session.pop('persona_logueada', None)
     # Elimino el carrito
     app.config['CARRITO'] = []
     return redirect(url_for('login'))
@@ -244,9 +243,8 @@ def add_persona():
                                            mensaje='Error: Nombre de usuario ya existente',
                                            persona_logueada=persona_logueada)
                 else:
-                    Persona.establece_contraseña(persona, contraseña)
                     registro_form.populate_obj(persona)
-                    PersonaLogic.add_persona(persona)
+                    PersonaLogic.add_persona(persona, contraseña)
                     return render_template('mensaje.html',
                                            mensaje='Persona agregada correctamente',
                                            persona_logueada=persona_logueada)
@@ -276,9 +274,8 @@ def add_persona():
                                                mensaje='Error: Nombre de usuario ya existente',
                                                persona_logueada=persona_logueada)
                     else:
-                        Persona.establece_contraseña(persona, contraseña)
                         registro_form.populate_obj(persona)
-                        PersonaLogic.add_persona(persona)
+                        PersonaLogic.add_persona(persona, contraseña)
                         return render_template('mensaje.html',
                                                mensaje='Persona agregada correctamente',
                                                persona_logueada=persona_logueada)
@@ -302,9 +299,8 @@ def add_persona():
                                                mensaje='Error: Nombre de usuario ya existente',
                                                persona_logueada=persona_logueada)
                     else:
-                        Persona.establece_contraseña(persona, contraseña)
                         registro_cliente_form.populate_obj(persona)
-                        PersonaLogic.add_persona(persona)
+                        PersonaLogic.add_persona(persona, contraseña)
                         return render_template('mensaje.html',
                                                mensaje='Se ha registrado correctamente',
                                                persona_logueada=persona_logueada)
@@ -489,6 +485,7 @@ def busca_libros():
             if opcion == 'autor':
                 return redirect(url_for('get_libros_by_author', autor=busca))
             elif opcion == 'genero':
+                busca = busca[0].lower() + busca[1:]
                 return redirect(url_for('get_libros_by_genre', genero=busca))
         else:
             return render_template('alquiler_libros.html')
@@ -653,7 +650,7 @@ def confirmar_pedido():
                     pedido.fecha_devolucion = fecha_devolucion_str
 
                     # Agrego el id del cliente al pedido
-                    persona_data = session.get('persona_logueda')
+                    persona_data = session.get('persona_logueada')
                     persona_id = persona_data.get('id')
                     pedido.id_persona = persona_id
                     diccionario_libros = session.get('diccionario_libros')
@@ -813,11 +810,11 @@ def finaliza_devolucion(id):
 
 
 def obtener_persona_logueada():
-    # Método para obtener la persona que está logueda en la sesión
-    persona_data = session.get('persona_logueda')
+    # Método para obtener la persona que está logueada en la sesión
+    persona_data = session.get('persona_logueada')
     if persona_data:
-        persona_logueda = Persona.from_dict(persona_data)
-        return persona_logueda
+        persona_logueada = Persona.from_dict(persona_data)
+        return persona_logueada
 
 
 def envia_recomendaciones(recomendaciones_de_lectura):
@@ -833,5 +830,8 @@ def envia_recomendaciones(recomendaciones_de_lectura):
 
     msg = Message(asunto, recipients=[persona_logueada.email])
     msg.body = mensaje
-    mail.send(msg)
-    print('Se envió el email')
+    try:
+        mail.send(msg)
+        print('Se envió el email')
+    except Exception as e:
+        print('Mail ficticio')
