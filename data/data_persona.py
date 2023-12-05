@@ -116,8 +116,9 @@ class DataPersona:
             raise e
 
     @classmethod
-    def update_persona(cls):
+    def update_persona(cls, persona, contraseña):
         try:
+            persona.establece_contraseña(contraseña)
             Database.db.session.commit()
         except IntegrityError as e:
             raise e

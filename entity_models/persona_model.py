@@ -42,7 +42,6 @@ class Persona(db.Model):
 
     def establece_contraseña(self, contraseña):
         self.contraseña = generate_password_hash(contraseña)
-        print(self.contraseña)
 
     def valida_contraseña(self, contraseña):
         return check_password_hash(self.contraseña, contraseña)

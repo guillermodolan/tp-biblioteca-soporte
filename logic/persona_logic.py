@@ -130,9 +130,9 @@ class PersonaLogic:
             raise e
 
     @classmethod
-    def update_persona(cls):
+    def update_persona(cls, persona, contraseña):
         try:
-            DataPersona.update_persona()
+            DataPersona.update_persona(persona, contraseña)
         except IntegrityError as e:
             raise e
         except StaleDataError as e:

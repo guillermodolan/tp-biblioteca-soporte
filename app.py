@@ -333,10 +333,12 @@ def update_persona(id):
         try:
             persona = PersonaLogic.get_one_persona(id)
             registro_form = RegistroForm(obj=persona)
+            contraseña = request.form.get('contraseña')
+            print(f'Valor contraseña: {contraseña}')
             if request.method == 'POST':
                 if registro_form.validate_on_submit():
                     registro_form.populate_obj(persona)
-                    PersonaLogic.update_persona()
+                    PersonaLogic.update_persona(persona, contraseña)
                     return render_template('mensaje.html',
                                            mensaje='Persona actualizada correctamente',
                                            persona_logueada=persona_logueada)
