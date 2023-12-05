@@ -1,5 +1,4 @@
 from werkzeug.security import generate_password_hash, check_password_hash
-
 from data.database import Database
 
 db = Database.db
@@ -11,7 +10,7 @@ class Persona(db.Model):
     apellido = db.Column(db.String(150))
     email = db.Column(db.String(100))
     nombre_usuario = db.Column(db.String(80), nullable=False)
-    contraseña = db.Column(db.Text, nullable=False)
+    contraseña = db.Column(db.String(255), nullable=False)
     telefono = db.Column(db.String(25))
     tipo_persona = db.Column(db.String(40))
 
@@ -43,6 +42,7 @@ class Persona(db.Model):
 
     def establece_contraseña(self, contraseña):
         self.contraseña = generate_password_hash(contraseña)
+        print(self.contraseña)
 
     def valida_contraseña(self, contraseña):
         return check_password_hash(self.contraseña, contraseña)

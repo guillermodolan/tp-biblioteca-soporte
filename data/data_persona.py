@@ -66,8 +66,9 @@ class DataPersona:
             raise e
 
     @classmethod
-    def add_persona(cls, persona):
+    def add_persona(cls, persona, contraseña):
         try:
+            persona.establece_contraseña(contraseña)
             Database.db.session.add(persona)
             Database.db.session.commit()
         except sqlalchemy.exc.SQLAlchemyError as e:
