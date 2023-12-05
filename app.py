@@ -382,8 +382,13 @@ def get_libros_by_author(autor):
         libros_filtrados = [libro for libro in libros if
                             libro['titulo'] not in [pedido.libro.titulo for pedido in pedidos_pendientes]]
 
-        libros_seleccionados = random.sample(libros_filtrados, 5)
-        print(f'Cantidad seleccionada: {len(libros_seleccionados)}')
+        cant_filtrados = len(libros_filtrados)
+        if cant_filtrados < 5:
+            libros_seleccionados = random.sample(libros_filtrados, cant_filtrados)
+            print(f'Cantidad seleccionada: {len(libros_seleccionados)}')
+        else:
+            libros_seleccionados = random.sample(libros_filtrados, 5)
+            print(f'Cantidad seleccionada: {len(libros_seleccionados)}')
 
         # Guardo a los libros en la sesión. Me servirán más adelante para
         # enviar recomendaciones por email al cliente
@@ -401,11 +406,15 @@ def get_libros_by_author(autor):
         # Agregar una bandera 'en_carrito' a cada libro para indicar si está en el carrito o no
         for libro in libros_filtrados:
             libro['en_carrito'] = any(item['titulo'] == libro['titulo'] for item in carrito)
-        if libros_filtrados is not None:
+        if libros_filtrados:
             return render_template("libros_por_autor.html",
                                    librosPorAutor=libros_filtrados,
                                    carrito_de_pedidos=carrito,
                                    cant_pedidos_cliente=total_libros)
+        else:
+            return render_template('mensaje.html',
+                                   mensaje='El autor ingresado no tiene libros',
+                                   persona_logueada=persona_logueada)
     else:
         return render_template('mensaje.html',
                                mensaje='Página no encontrada',
@@ -437,8 +446,13 @@ def get_libros_by_genre(genero):
         libros_filtrados = [libro for libro in libros if
                             libro['titulo'] not in [pedido.libro.titulo for pedido in pedidos_pendientes]]
 
-        libros_seleccionados = random.sample(libros_filtrados, 5)
-        print(f'Cantidad seleccionada: {len(libros_seleccionados)}')
+        cant_filtrados = len(libros_filtrados)
+        if cant_filtrados < 5:
+            libros_seleccionados = random.sample(libros_filtrados, cant_filtrados)
+            print(f'Cantidad seleccionada: {len(libros_seleccionados)}')
+        else:
+            libros_seleccionados = random.sample(libros_filtrados, 5)
+            print(f'Cantidad seleccionada: {len(libros_seleccionados)}')
 
         # Guardo a los libros en la sesión. Me servirán más adelante para
         # enviar recomendaciones por email al cliente
@@ -645,7 +659,7 @@ def confirmar_pedido():
                     # Convertir la fecha a una cadena (string) en un formato específico
                     fecha_actual_str = fecha_actual.strftime('%Y-%m-%d')
                     # Agrega 7 días a la fecha actual
-                    fecha_devolucion = fecha_actual + timedelta(days=2)
+                    fecha_devolucion = fecha_actual + timedelta(days=7)
                     fecha_devolucion_str = fecha_devolucion.strftime('%Y-%m-%d')
 
                     pedido.fecha_pedido = fecha_actual_str
@@ -655,15 +669,16 @@ def confirmar_pedido():
                     persona_data = session.get('persona_logueda')
                     persona_id = persona_data.get('id')
                     pedido.id_persona = persona_id
-                    diccionario_libros = session.get('diccionario_libros')
-                    lista_libros_a_enviar = list(diccionario_libros.items())
                     PedidoLogic.add_pedido(pedido)
-
-                    if len(lista_libros_a_enviar) != 0:
-                        envia_recomendaciones(lista_libros_a_enviar)
 
                     # Elimino el carrito
                     app.config['CARRITO'] = []
+
+            diccionario_libros = session.get('diccionario_libros')
+            lista_libros_a_enviar = list(diccionario_libros.items())
+
+            if len(lista_libros_a_enviar) != 0:
+                envia_recomendaciones(lista_libros_a_enviar)
             return render_template('mensaje.html',
                                    mensaje='Pedido realizado exitosamente',
                                    persona_logueada=persona_logueada)
