@@ -8,7 +8,7 @@ db = Database.db
 class Libro(db.Model):
     id_libro = db.Column(db.Integer, primary_key=True)
     isbn = db.Column(db.String(30))
-    titulo = db.Column(db.String(100))
+    titulo = db.Column(db.String(255))
     existencia = db.Column(db.Boolean)
     id_categoria = db.Column(db.Integer, db.ForeignKey('categoria.id_categoria'))
     categoria = db.relationship("Categoria", backref=db.backref("categoria", uselist=False))

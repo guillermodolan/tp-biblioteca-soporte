@@ -74,9 +74,9 @@ class PersonaLogic:
             raise e
 
     @classmethod
-    def add_persona(cls, persona):
+    def add_persona(cls, persona, contraseña):
         try:
-            DataPersona.add_persona(persona)
+            DataPersona.add_persona(persona, contraseña)
         except sqlalchemy.exc.SQLAlchemyError as e:
             app.logger.debug(f'Error en la base de datos: {e}')
             raise e
@@ -105,7 +105,8 @@ class PersonaLogic:
             persona = PersonaLogic.get_persona_by_user(username)
             if persona:
                 persona_validada = Persona.valida_contraseña(persona, contraseña)
-                if persona_validada is not None:
+                print(f'Valor booleano: {persona_validada}')
+                if persona_validada:
                     return persona
                 else:
                     return None
@@ -119,7 +120,6 @@ class PersonaLogic:
 
     @classmethod
     def delete_persona(cls, id):
-        global mensaje
         try:
             DataPersona.delete_persona(id)
         except IntegrityError as e:
@@ -130,9 +130,9 @@ class PersonaLogic:
             raise e
 
     @classmethod
-    def update_persona(cls):
+    def update_persona(cls, persona, contraseña):
         try:
-            DataPersona.update_persona()
+            DataPersona.update_persona(persona, contraseña)
         except IntegrityError as e:
             raise e
         except StaleDataError as e:
