@@ -385,10 +385,9 @@ def get_libros_by_author(autor):
         cant_filtrados = len(libros_filtrados)
         if cant_filtrados < 5:
             libros_seleccionados = random.sample(libros_filtrados, cant_filtrados)
-            print(f'Cantidad seleccionada: {len(libros_seleccionados)}')
         else:
             libros_seleccionados = random.sample(libros_filtrados, 5)
-            print(f'Cantidad seleccionada: {len(libros_seleccionados)}')
+        print(f'Cantidad seleccionada: {len(libros_seleccionados)}')
 
         # Guardo a los libros en la sesión. Me servirán más adelante para
         # enviar recomendaciones por email al cliente
