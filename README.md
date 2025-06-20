@@ -10,6 +10,5 @@ Los casos de uso que incluye este trabajo práctico son:
 Los libros que abarca este proyecto se obtienen de la API: https://openlibrary.org/  
 
 Las tecnologías usadas en dicho trabajo fueron:  
-
 __Back-End:__ Flask (Python Framework), PostgreSQL, Jinja, Psycopg2, SQLAlchemy.  
 __Front-End:__ Flask (Python Framework), HTML, CSS, Bootstrap
