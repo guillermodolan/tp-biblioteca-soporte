@@ -4,5 +4,5 @@ Biblioteca Konigari fue un trabajo práctico integrador de la asignatura Soporte
 
 Las tecnologías usadas en dicho trabajo fueron:
 
-__Back-End:__ Flask (Python Framework), PostgreSQL. 
+__Back-End:__ Flask (Python Framework), PostgreSQL.  
 __Front-End:__ Flask (Python Framework), HTML, CSS, Bootstrap
